@@ -111,7 +111,7 @@ export const SignUp=()=>{
 <span><input id="admin-phone-number" type="text" placeholder="phone number" className={"gradient-border py-1 "} /></span>
  </div>
 
- <button onClick={()=>{HandleSignup(['admin-username','admin-password','admin-email','admin-phone-number'])}} className={"zoe-button w-1/2 ml-3 "} >Signup</button>
+ <button onClick={()=>{HandleSignup(['admin-username','admin-password','admin-email','admin-phone-number'])}} className={"zoe-button px-2 py-2 rounded-full bg-primary text-primary-foreground font-medium  transition-all duration-300 hover:shadow-[0_0_10px_rgba(139,92,246,0.5)]  hover:scale-105 active:scale-95 w-1/2 ml-3 "} >Signup</button>
     </div>
 </section>
 }
