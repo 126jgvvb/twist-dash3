@@ -22,9 +22,9 @@ export const ListHeader=({listOfHeadings,listOfItems})=>{
             <div key={key} className={" grid grid-cols-5 md:gap-5 bg-graph-area mb-6 w-full justify-center items-center text-primary hover:text-foreground"} >
                 <span>{item.code}</span>
                 <span>{item.phoneNumber}</span>
-                <span>{item.isBound}</span>
+                <span>{item.isBound=='true'?'active':'off'}</span>
                 <span>{item.payment}</span>
-                <span>{item.expiry/(86400)+'day(s)'}</span>
+                <span>{Math.round(item.expiry)+'hr(s)'}</span>
             </div>
         ))
     }

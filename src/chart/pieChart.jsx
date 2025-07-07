@@ -25,7 +25,16 @@ const ClientsGraphicalData = ({ tokens }) => {
             case 'ugx.5000': data[2].value += 1; break
             case 'ugx.9000': data[3].value += 1; break
             case 'ugx.18000': data[4].value += 1; break
-            case 'any':data[0].value+=1; break
+            case 'Any':data[0].value+=1; break
+        }
+
+        if(obj.payment==undefined){
+        //    alert('here'+obj.expiry);
+                if (obj.expiry<24) data[0].value += 1; 
+                else if ( obj.expiry>24 && obj.expiry<72)  data[1].value += 1; 
+                else if (obj.expiry>72 && obj.expiry<168) data[2].value += 1; 
+                else if (obj.expiry>168 && obj.expiry<672 ) data[3].value += 1; 
+                else if (obj.expiry>672) data[4].value += 1; 
         }
     }
 

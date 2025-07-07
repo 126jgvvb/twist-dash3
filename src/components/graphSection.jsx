@@ -41,23 +41,26 @@ return <section>
                             {
 
                                 storeState === true ?? routers.length > 0 ? routers.map((router,key) => {
+                                    
                                     let data = [];
                                     counter.current++;
                                     if (counter.current >= routers.length) counter.current = 0;
                                 
                                     for (const code of runningCodes) {
-                                        if (code.routerIP === router.routerIP) {
+                                        if (code.routerIP === '192.168.1.6' && code.routerIP!=undefined) {
+                                        //    alert(code.routerIP);
                                             data.push(code);
                                         }
                                     }  
 
+                                   
                                     //remove this line after tests
-                                   data = runningCodes;
+                                 //  data = runningCodes;
                                  //   if (counter.current == 1) InView = `charts-${counter.current}`;
 
-                                  
+                                  // ${(counter.current-1)!=0 && 'hidden'
                                     return (
-                                      <div key={key} className={` ${(counter.current-1)!=0 && 'hidden'  } overflow-x-auto flex flex-col mx-auto bg-card rounded-[20px] py-4 px-4  space-y-8 `} >
+                                      <div key={key} className={` ${(counter.current-1)!=0 && ''  } overflow-x-auto flex flex-col mx-auto bg-card rounded-[20px] py-4 px-4  space-y-8 `} >
                                         <div  id={`charts-${counter.current}`} className={`grid grid-cols-1 md:grid md:grid-cols-2 gap-12 `}>
                                                 <ClientsGraphicalData tokens={data} />
                                                 <BarX tokens={data} />

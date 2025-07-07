@@ -25,7 +25,7 @@ let expiry=null;
         }
 
         const value = Event.target.value.split('-')[0];
-         expiry = value * 86400; //86,400ms is 24hrs and 3600 is 1 hour]converting hours to seconds
+         expiry = value * 3600; //86,400ms is 24hrs and 3600 is 1 hour]converting hours to seconds
         }
 
 
