@@ -159,7 +159,7 @@ export const ClientsList=({headerList,list})=>{
  <span>Enter Token</span>
  <span><input id="token-id" type="text" placeholder="token" className={"gradient-border max-sm:w-[200px] py-1 "} /></span>
     </div>
-    <button onClick={()=>{HandleLogin('token-id')}} className={"zoe-button"} >{loading?<CircleNotch className="animate-spin ml-[50%]" size={20.0} />: 'Login'}</button>
+    <button onClick={()=>{HandleLogin('token-id')}} className={"zoe-button px-2 py-2 rounded-full bg-primary text-primary-foreground font-medium  transition-all duration-300 hover:shadow-[0_0_10px_rgba(139,92,246,0.5)]  hover:scale-105 active:scale-95 "} >{loading?<CircleNotch className="animate-spin ml-[50%]" size={20.0} />: 'Login'}</button>
 
     <span>OR</span>
 
@@ -178,7 +178,7 @@ export const ClientsList=({headerList,list})=>{
  <span><input id="phone-number" type="text" placeholder="074***********" className={"max-sm:w-[200px] gradient-border py-1"} /></span>
     </div>
 
-    <button onClick={()=>{HandlePhoneNumber('phone-number')}} className={"zoe-button"} >{initiate?<CircleNotch size={20.0} className="ml-[50%] animate-spin " /> :'Initiate'}</button>
+    <button onClick={()=>{HandlePhoneNumber('phone-number')}} className={"zoe-button px-2 py-2 rounded-full bg-primary text-primary-foreground font-medium  transition-all duration-300 hover:shadow-[0_0_10px_rgba(139,92,246,0.5)] hover:scale-105 active:scale-95 "} >{initiate?<CircleNotch size={20.0} className="ml-[50%] animate-spin " /> :'Initiate'}</button>
 </div>
      </div>
 

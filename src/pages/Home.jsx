@@ -130,8 +130,8 @@ export const Home=()=>{
     
     useEffect(()=>{
         dispatch(pingServer());
-        alert(serverActive);
-        if(serverActive){ dispatch(getOnlineData());}
+        setTimeout(()=>{dispatch(getOnlineData());},20);
+        //  if(serverActive){ dispatch(getOnlineData());}
     },[dispatch])
 
     const checkAuthorization = () => {

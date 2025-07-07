@@ -26,7 +26,7 @@ let expiry=null;
 
         const value = Event.target.value.split('-')[0];
          expiry = value * 86400; //86,400ms is 24hrs and 3600 is 1 hour]converting hours to seconds
-    }
+        }
 
 
     const NotifyServerAbtNewToken =async () => {
@@ -64,7 +64,7 @@ let expiry=null;
  <div className={"grid grid-cols-1  gap-4"} >
      <div className={" flex flex-col space-y-6 w-full mx-auto text-xl"} >
   <span className={"font-bold"}  >Select Timeframe</span>
-  <select id="select-element" onChange={(Event) => { generateNewToken(Event) }} className="timeframe-select bg-card text-sm lg:text-1xl gradient-border items-center justify-center mx-auto">
+  <select id="select-element" onChange={(Event) => {  generateNewToken(Event) }} className="timeframe-select bg-card text-sm lg:text-1xl gradient-border items-center justify-center mx-auto">
                                 <option id="default-time-option" selected>----select time frame------</option>
 
                                 {
@@ -81,7 +81,7 @@ let expiry=null;
     </select>    
    </div>
  
-     <button onClick={(Event)=>{NotifyServerAbtNewToken()}} className={"zoe-button w-1/2  ml-18 md:ml-40 lg:ml-80 "} > {!isSending ? 'Generate Token':'Generating...'}</button>
+     <button onClick={(Event)=>{NotifyServerAbtNewToken()}} className={"zoe-button px-2 py-2 rounded-full bg-primary text-primary-foreground font-medium  transition-all duration-300 hover:shadow-[0_0_10px_rgba(139,92,246,0.5)]  hover:scale-105 active:scale-95 w-1/2  ml-18 md:ml-40 lg:ml-80 "} > {!isSending ? 'Generate Token':'Generating...'}</button>
 
 <div className={"md:flex space-x-7 justify-center mx-auto items-center"} >
      <span className={"text-1xl font-bold"} >Your Token code is:</span>

@@ -67,7 +67,7 @@ const [isAddingRouter,setIsAdding]=useState(false);
   <span><input id="router-ip" type="text" placeholder="router mac address" className={"gradient-border  py-1"} /></span>
      </div>
  
-     <button onClick={()=>{addRouter()}} className={"zoe-button w-1/2 ml-18 md:ml-40 lg:w-full lg:ml-[110%] "} >{isAddingRouter?'Saving...':'Save' }</button>
+     <button onClick={()=>{addRouter()}} className={"zoe-button px-2 py-2 rounded-full bg-primary text-primary-foreground font-medium transition-all duration-300 hover:shadow-[0_0_10px_rgba(139,92,246,0.5)] hover:scale-105 active:scale-95 w-1/2 ml-18 md:ml-40 lg:w-full lg:ml-[110%] "} >{isAddingRouter?'Saving...':'Save' }</button>
  </div>
  
      </div>  

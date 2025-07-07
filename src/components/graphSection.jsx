@@ -67,7 +67,7 @@ return <section>
                                       
                                         <div className={"flex md:space-x-12 mx-auto text-xl" } >
                                         <span><ArrowLeft size={24} /></span>
-                                        <div className={'zoe-button px-8'}><span>{`${router.name}`}</span></div>
+                                        <div className={'zoe-button px-2 py-2 rounded-full bg-primary text-primary-foreground font-medium transition-all duration-300 hover:shadow-[0_0_10px_rgba(139,92,246,0.5)]  hover:scale-105 active:scale-95 px-8'}><span>{`${router.name}`}</span></div>
                                         <span><ArrowRight size={24} /></span>
                                         </div>
                                     </div>

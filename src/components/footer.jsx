@@ -82,13 +82,13 @@ export const Footer=({adminDetails})=>{
      <div className={" flex  flex-col space-y-3 w-1/2 mx-auto text-sm"} >
   <span>New Password</span>
   <span><input id="new-password" type="text" placeholder="new password" className={"gradient-border p-1"} /></span>
-  <button onClick={()=>{changePassword()}} className={"zoe-button rounded-[8px] px-12 " } >{changingPassword?'Saving...':'Save' }</button>
+  <button onClick={()=>{changePassword()}} className={"zoe-button px-2 py-2 rounded-full bg-primary text-primary-foreground font-medium  transition-all duration-300 hover:shadow-[0_0_10px_rgba(139,92,246,0.5)]  hover:scale-105 active:scale-95 rounded-[8px] px-12 " } >{changingPassword?'Saving...':'Save' }</button>
      </div>
 
      <div className={" flex flex-col space-y-3 w-1/2 mx-auto text-sm"} >
   <span>New Phone Number</span>
   <span><input id="new-phone-number" type="text" placeholder="new phone number" className={"gradient-border p-1"} /></span>
-  <button onClick={()=>{changePhoneNumber()}} className={"zoe-button rounded-[8px] px-12 " } >{changingNumber ? 'Saving...':'Save'}</button>
+  <button onClick={()=>{changePhoneNumber()}} className={"zoe-button px-2 py-2 rounded-full bg-primary text-primary-foreground font-medium  transition-all duration-300 hover:shadow-[0_0_10px_rgba(139,92,246,0.5)]  hover:scale-105 active:scale-95 rounded-[8px] px-12 " } >{changingNumber ? 'Saving...':'Save'}</button>
      </div>
  </div>
   
@@ -112,7 +112,7 @@ export const Footer=({adminDetails})=>{
      </div>
 
  <div className={"  space-x-6 w-full mx-auto text-sm"} >
-  <button className={"zoe-button rounded-[8px] px-12 " } >Delete Admin</button>
+  <button className={"zoe-button px-2 py-2 rounded-full bg-primary text-primary-foreground font-medium transition-all duration-300 hover:shadow-[0_0_10px_rgba(139,92,246,0.5)]  hover:scale-105 active:scale-95 rounded-[8px] px-12 " } >Delete Admin</button>
      </div>
  
  <p className="text-sm mt-8 text-muted-foreground" >&copy; {new Date().getFullYear()} chargedMatrix.co,All rights reserved</p>

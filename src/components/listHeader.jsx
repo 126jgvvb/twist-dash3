@@ -24,7 +24,7 @@ export const ListHeader=({listOfHeadings,listOfItems})=>{
                 <span>{item.phoneNumber}</span>
                 <span>{item.isBound}</span>
                 <span>{item.payment}</span>
-                <span>{item.expiry/3600}</span>
+                <span>{item.expiry/(86400)+'day(s)'}</span>
             </div>
         ))
     }

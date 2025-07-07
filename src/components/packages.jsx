@@ -80,7 +80,7 @@ export const PackagesList=({headerList,list,admin})=>{
     <span><input id="new-amount" type="text" placeholder="package amount" className={"gradient-border py-1"} /></span>
     </div>
 
-    <button onClick={()=>{addNewPackage()}} className={"zoe-button hover:text-glow"} >{isAddingPackage ?'Saving...':'Save' }</button>
+    <button onClick={()=>{addNewPackage()}} className={"zoe-button px-2 py-2 rounded-full bg-primary text-primary-foreground font-medium transition-all duration-300 hover:shadow-[0_0_10px_rgba(139,92,246,0.5)] hover:scale-105 active:scale-95 hover:text-glow"} >{isAddingPackage ?'Saving...':'Save' }</button>
 </div>
      </div>
 
