@@ -15,8 +15,8 @@ const [isAddingRouter,setIsAdding]=useState(false);
         if (routerName === undefined ||
             routerName === '' ||
             routerIP === undefined ||
-            routerIP === '' ||
-            (/[+#$%@!*-]/.test(routerIP))
+            routerIP === ''
+          //  ||(/[+#$%@!*-]/.test(routerIP))
             //|| (/[a-zA-Z]/.test(routerIP))
         ) {
             alert('Check your input...something is wrong');
