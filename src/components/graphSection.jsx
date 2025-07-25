@@ -47,7 +47,7 @@ return <section>
                                     if (counter.current >= routers.length) counter.current = 0;
                                 
                                     for (const code of runningCodes) {
-                                        if (code.routerIP === '192.168.1.6' && code.routerIP!=undefined) {
+                                        if ( code.routerIP!=undefined) {
                                         //    alert(code.routerIP);
                                             data.push(code);
                                         }
