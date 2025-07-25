@@ -49,7 +49,7 @@ return <section>
                                     for (const code of runningCodes) {
                                         if ( code.routerIP!=undefined) {
                                         //    alert(code.routerIP);
-                                            data.push(code);
+                                        if(code.routerIP==router.routerIP)    data.push(code);
                                         }
                                     }  
 
