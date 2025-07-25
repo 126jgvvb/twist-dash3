@@ -3,7 +3,7 @@
 
 export const ListHeader=({listOfHeadings,listOfItems})=>{
 
-    return <div className={" bg-card py-12 px-5 ml-20 overflow-x-auto  relative mx-5 my-8 max-h-screen items-center justify-center space-y-8"}  >
+    return <div className={" bg-card py-12 px-5 ml-20 overflow-x-auto  overflow-y-auto relative mx-5 my-8 max-h-screen items-center justify-center space-y-8"}  >
      
      <div className={" mx-auto max-w-4xl whitespace-nowrap container flex space-x-3  md:grid md:grid-cols-5 "} >
      {
