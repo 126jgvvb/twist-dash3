@@ -19,12 +19,12 @@ const ClientsGraphicalData = ({ tokens }) => {
     for (let obj of tokens) {
 
           // eslint-disable-next-line default-case
-          switch (obj.payment) {
-            case 'ugx.1000': data[0].value+=1; break
-            case 'ugx.2500': data[1].value += 1; break
-            case 'ugx.5000': data[2].value += 1; break
-            case 'ugx.9000': data[3].value += 1; break
-            case 'ugx.18000': data[4].value += 1; break
+          switch (obj.expiry) {
+             case (obj.expiry<=86400): data[0].value+=1; break
+            case (obj.expiry<=172800): data[1].value += 1; break
+            case (obj.expiry<=604800): data[2].value += 1; break
+            case (obj.expiry<=1209600): data[3].value += 1; break
+            case (obj.expiry<=2592000): data[4].value += 1; break
             case 'Any':data[0].value+=1; break
         }
 
