@@ -17,7 +17,7 @@ const ClientsGraphicalData = ({ tokens }) => {
     ];
 
     for (let obj of tokens) {
-
+                console.log(J'--->',SON.stringify(obj));
           // eslint-disable-next-line default-case
           switch (obj.expiry) {
              case ((obj.expiry*3600)<=86400): data[0].value+=1; break
