@@ -1,87 +1,107 @@
 
+import { useState, useEffect, useRef } from 'react';
+import { ArrowLeft, ArrowRight, CircleDivideIcon } from 'lucide-react';
 import ClientsGraphicalData from '../chart/pieChart';
 import BarX from '../chart/barGraph';
-import { useRef } from 'react';
-import { ArrowLeft, ArrowRight, CircleDivideIcon } from 'lucide-react';
 
-let InView=null;
-const storeState=true;
-/*
-const routers=[
-    {
-        name:'router0',
-        holder:'0741882818',
-        mac:'XXXXXXXXXXXXXXXXXXXXXXXXX',
-        routerIP:"192.168.1.2"
-    },
-    {
-        name:'router1',
-        holder:'0780910033',
-        mac:'XXXXXXXXXXXXXXXXXXXXXXXXX',
-        routerIP:"192.168.1.2"
+export const GraphSection = ({ routers = [], runningCodes = [] }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const intervalRef = useRef(null);
+
+  // Filter data for the current router
+  const currentRouter = routers[currentIndex];
+  const data = runningCodes.filter(
+    (code) =>
+      code.routerIP === currentRouter?.ip || code.routerIP === currentRouter?.routerIP
+  );
+
+  // Navigate manually
+  const handleNext = () =>
+    setCurrentIndex((prev) => (prev + 1) % routers.length);
+
+  const handlePrev = () =>
+    setCurrentIndex((prev) => (prev - 1 + routers.length) % routers.length);
+
+  // Auto-slide every 5s
+  useEffect(() => {
+    if (routers.length > 1) {
+      intervalRef.current = setInterval(() => {
+        setCurrentIndex((prev) => (prev + 1) % routers.length);
+      }, 5000);
     }
-]
 
-const runningCodes=[
-    {
-        routerIP:"192.168.1.2",
-        payment:"ugx.1000"
+    return () => clearInterval(intervalRef.current);
+  }, [routers.length]);
+
+  // Pause on hover
+  const pauseAutoSlide = () => clearInterval(intervalRef.current);
+  const resumeAutoSlide = () => {
+    if (routers.length > 1) {
+      intervalRef.current = setInterval(() => {
+        setCurrentIndex((prev) => (prev + 1) % routers.length);
+      }, 5000);
     }
-]
-*/
+  };
 
-export const GraphSection=({routers,runningCodes})=>{
-    const counter=useRef(0);
+  if (!routers.length) {
+    return (
+      <div className="flex justify-center items-center py-20">
+        <CircleDivideIcon size={32} className="animate-spin text-primary" />
+      </div>
+    );
+  }
 
-  
-    
-return <section>
-    <div className={" py-24 px-4  relative justify-center "} >
-    <div className={'graph-area space-y-4  space-x-6 container overflow-x-auto mx-auto max-w-5xl '}>
-                            {
+  return (
+    <section className="py-20 px-4">
+      <div className="container mx-auto max-w-5xl">
+        <div
+          className="bg-card rounded-2xl shadow-md p-6 space-y-8 transition-all duration-300 hover:shadow-lg"
+          onMouseEnter={pauseAutoSlide}
+          onMouseLeave={resumeAutoSlide}
+        >
+          {/* Graphs */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 transition-all duration-500 ease-in-out">
+            <ClientsGraphicalData tokens={data} />
+            <BarX tokens={data} />
+          </div>
 
-                                storeState === true ?? routers.length > 0 ? routers.map((router,key) => {
-                                    
-                                    let data = [];
-                                    counter.current++;
-                                    if (counter.current >= routers.length) counter.current = 0;
-                                
-                                    for (const code of runningCodes) {
-                                        if ( code.routerIP!=undefined) {
-                                        //    alert(code.routerIP);
-                                        if(code.routerIP==router.routerIP)    data.push(code);
-                                        }
-                                    }  
+          {/* Navigation */}
+          <div className="flex justify-center items-center space-x-6 text-xl">
+            <button
+              onClick={handlePrev}
+              className="p-2 rounded-full hover:bg-primary/10 active:scale-95 transition"
+            >
+              <ArrowLeft size={24} />
+            </button>
 
-                                   
-                                    //remove this line after tests
-                                 //  data = runningCodes;
-                                 //   if (counter.current == 1) InView = `charts-${counter.current}`;
+            <div className="zoe-button px-6 py-2 rounded-full bg-primary text-primary-foreground font-medium transition-all duration-300 hover:shadow-[0_0_10px_rgba(139,92,246,0.5)] hover:scale-105 active:scale-95">
+              {currentRouter?.name || 'Unnamed Router'}
+            </div>
 
-                                  // ${(counter.current-1)!=0 && 'hidden'
-                                    return (
-                                      <div key={key} className={` ${(counter.current-1)!=0 && ''  } overflow-x-auto flex flex-col mx-auto bg-card rounded-[20px] py-4 px-4  space-y-8 `} >
-                                        <div  id={`charts-${counter.current}`} className={`grid grid-cols-1 md:grid md:grid-cols-2 gap-12 `}>
-                                                <ClientsGraphicalData tokens={data} />
-                                                <BarX tokens={data} />
-                                       
-                                        </div>
+            <button
+              onClick={handleNext}
+              className="p-2 rounded-full hover:bg-primary/10 active:scale-95 transition"
+            >
+              <ArrowRight size={24} />
+            </button>
+          </div>
 
-                                      
-                                        <div className={"flex md:space-x-12 mx-auto text-xl" } >
-                                        <span><ArrowLeft size={24} /></span>
-                                        <div className={'zoe-button px-2 py-2 rounded-full bg-primary text-primary-foreground font-medium transition-all duration-300 hover:shadow-[0_0_10px_rgba(139,92,246,0.5)]  hover:scale-105 active:scale-95 px-8'}><span>{`${router.name}`}</span></div>
-                                        <span><ArrowRight size={24} /></span>
-                                        </div>
-                                    </div>
-                                    )
-                               
-                  
+          {/* Index Indicator */}
+          <div className="flex justify-center space-x-2 mt-2">
+            {routers.map((_, i) => (
+              <span
+                key={i}
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                  i === currentIndex
+                    ? 'bg-primary scale-110'
+                    : 'bg-gray-300 dark:bg-gray-700'
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
 
-                                }) : <div className={''}><CircleDivideIcon size={20.0} className="animate-spin "/></div>
-                            }
-                            </div>
-    </div>
-</section>
-
-}
