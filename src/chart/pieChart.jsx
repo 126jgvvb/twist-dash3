@@ -20,11 +20,11 @@ const ClientsGraphicalData = ({ tokens }) => {
 
           // eslint-disable-next-line default-case
           switch (obj.expiry) {
-             case (obj.expiry<=86400): data[0].value+=1; break
-            case (obj.expiry<=172800): data[1].value += 1; break
-            case (obj.expiry<=604800): data[2].value += 1; break
-            case (obj.expiry<=1209600): data[3].value += 1; break
-            case (obj.expiry<=2592000): data[4].value += 1; break
+             case ((obj.expiry*3600)<=86400): data[0].value+=1; break
+            case ((obj.expiry*3600)<=172800): data[1].value += 1; break
+            case ((obj.expiry*3600)<=604800): data[2].value += 1; break
+            case ((obj.expiry*3600)<=1209600): data[3].value += 1; break
+            case ((obj.expiry*3600)<=2592000): data[4].value += 1; break
             case 'Any':data[0].value+=1; break
         }
 
