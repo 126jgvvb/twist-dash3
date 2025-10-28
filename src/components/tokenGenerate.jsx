@@ -1,103 +1,148 @@
 import { Copy, LoaderIcon } from "lucide-react";
 import { useState } from "react";
-import { useSelector,useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setNewCode } from "../redux/defaultSlice";
 import { networkObject } from "../pages/network";
 
-const clientTimeFrames= ['1-HR','6-HRS','12-HRS','24-HRS','48-HRS(2Days)','72-HRS(3Days)','1-week','1-month'];
+const clientTimeFrames = [
+  "1-HR",
+  "6-HRS",
+  "12-HRS",
+  "24-HRS",
+  "48-HRS(2Days)",
+  "72-HRS(3Days)",
+  "1-week",
+  "1-month",
+];
 
-export const GenerateToken=({code})=>{
+export const GenerateToken = ({ code }) => {
+  const [selectedExpiry, setSelectedExpiry] = useState(null);
+  const [isSending, setSending] = useState(false);
+  const [currentCode, setCode] = useState(code);
+  const [copied, setCopied] = useState(false);
+  const dispatch = useDispatch();
 
-const [storeState,setState]=useState(true);
-const [isSending,setSending]=useState(false);
-let [currentCode,setCode]=useState(code);
-let [showCopyIcon,setCopy]= useState(true);
-const dispatch=useDispatch();
-let expiry=null;
-
-//alert(currentCode);
-
-    const generateNewToken = (Event) => {
-        const evTarget = Event.target.value;
-        if (evTarget === '----select time frame------') {
-            alert('Please select an option');
-            return false;
-        }
-
-        const value = Event.target.value.split('-')[0];
-         expiry = value * 3600; //86,400ms is 24hrs and 3600 is 1 hour]converting hours to seconds
-        }
-
-
-    const NotifyServerAbtNewToken =async () => {
-        if (expiry === null) {
-            alert('Please re-validate your selection');
-            return;
-        }
-
-        if (await networkObject.isNetworkError()) {
-            alert('Network Error');
-            return;
-        }
-
-        setSending(true);
-        const generatedValue = networkObject.getNewVoucher(expiry);
-        generatedValue.then((result) => {
-            if (result) {
-                dispatch(setNewCode({payload:result.code}));
-                setCode(result.code);
-                setSending(false);
-                expiry = null; //reseting settings
-            }
-            else {
-                alert('Failed to generate code');
-                setSending(false);
-            }
-        });
-
+  // Handle select input
+  const handleTimeFrameChange = (event) => {
+    const value = event.target.value;
+    if (value === "----select time frame------") {
+      setSelectedExpiry(null);
+      return;
     }
 
+    const hours = value.split("-")[0];
+    const expirySeconds = hours * 3600;
+    setSelectedExpiry(expirySeconds);
+  };
 
-    return <div className={'bg-card py-12 px-5  relative mx-8 container my-8 max-h-screen items-center justify-center space-y-8'} >
-   
- 
- <div className={"grid grid-cols-1  gap-4"} >
-     <div className={" flex flex-col space-y-6 w-full mx-auto text-xl"} >
-  <span className={"font-bold"}  >Select Timeframe</span>
-  <select id="select-element" onChange={(Event) => {  generateNewToken(Event) }} className="timeframe-select bg-card text-sm lg:text-1xl gradient-border items-center justify-center mx-auto">
-                                <option id="default-time-option" selected>----select time frame------</option>
+  // Notify server and generate new token
+  const notifyServerAbtNewToken = async () => {
+    if (!selectedExpiry) {
+      alert("Please select a valid timeframe before generating a token.");
+      return;
+    }
 
-                                {
-                                    storeState===true ?
-                                        clientTimeFrames.map((frame,index) => {
-                                            return (
-                                                <option key={index} id={`time-option-${index}`} className="time-option">{frame}</option>
-                                            )
-                                        })
-                                        :
-                                       <option><LoaderIcon color="yellow" className=" animate-spin" size={20.0}/>
-                                        </option> 
-                                }
-    </select>    
-   </div>
- 
-     <button onClick={(Event)=>{NotifyServerAbtNewToken()}} className={"zoe-button px-2 py-2 rounded-full bg-primary text-primary-foreground font-medium  transition-all duration-300 hover:shadow-[0_0_10px_rgba(139,92,246,0.5)]  hover:scale-105 active:scale-95 w-1/2  ml-18 md:ml-40 lg:ml-80 "} > {!isSending ? 'Generate Token':'Generating...'}</button>
+    if (await networkObject.isNetworkError()) {
+      alert("Network error. Please check your connection.");
+      return;
+    }
 
-<div className={"md:flex space-x-7 justify-center mx-auto items-center"} >
-     <span className={"text-1xl font-bold"} >Your Token code is:</span>
-    
-     <span className={'user-link flex space-x-4 ' }>
-                            <span id='token-code' className="current-token text-2xl  font-bold ">{currentCode}</span>
-                            {showCopyIcon ?
-                            <span className={"mt-2"} > <Copy size={20.5} onClick={async () => {
-                                await navigator.clipboard.writeText(document.getElementById('token-code').innerText);
-                                setCopy(false);
-                            }}
-                                className="" /></span>
-                                : <span className={"mt-2"} >Copied!</span>  
-                        }
-                        </span>
-                        </div>
- </div> 
-</div>  
-}
+    setSending(true);
+
+    try {
+      const result = await networkObject.getNewVoucher(selectedExpiry);
+      if (result?.code) {
+        dispatch(setNewCode({ payload: result.code }));
+        setCode(result.code);
+        setSelectedExpiry(null);
+      } else {
+        alert("Failed to generate a new token.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("An unexpected error occurred.");
+    } finally {
+      setSending(false);
+    }
+  };
+
+  // Copy token to clipboard
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(currentCode);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className="bg-card py-10 px-8 mx-auto my-10 rounded-xl shadow-lg max-w-2xl space-y-10">
+      {/* Header */}
+      <h2 className="text-2xl font-bold text-center text-primary">Generate Access Token</h2>
+
+      {/* Timeframe Selection */}
+      <div className="flex flex-col space-y-4">
+        <label className="text-lg font-semibold text-foreground">
+          Select Timeframe
+        </label>
+        <select
+          onChange={handleTimeFrameChange}
+          className="bg-background border border-border rounded-lg p-3 text-sm focus:ring-2 focus:ring-primary focus:outline-none"
+          defaultValue="----select time frame------"
+        >
+          <option>----select time frame------</option>
+          {clientTimeFrames.map((frame, index) => (
+            <option key={index}>{frame}</option>
+          ))}
+        </select>
+      </div>
+
+      {/* Generate Button */}
+      <div className="flex justify-center">
+        <button
+          onClick={notifyServerAbtNewToken}
+          disabled={isSending}
+          className={`px-6 py-3 rounded-full text-white font-medium transition-all duration-300 ${
+            isSending
+              ? "bg-primary/70 cursor-not-allowed"
+              : "bg-primary hover:shadow-lg hover:scale-105"
+          }`}
+        >
+          {isSending ? (
+            <span className="flex items-center gap-2">
+              <LoaderIcon className="animate-spin" size={18} /> Generating...
+            </span>
+          ) : (
+            "Generate Token"
+          )}
+        </button>
+      </div>
+
+      {/* Token Display */}
+      <div className="flex flex-col items-center space-y-3 text-center">
+        <span className="text-lg font-semibold text-foreground">
+          Your Token Code:
+        </span>
+        <div className="flex items-center gap-3 bg-muted px-5 py-3 rounded-lg shadow-inner">
+          <span
+            id="token-code"
+            className="text-xl font-bold tracking-wide text-primary break-all"
+          >
+            {currentCode || "No token yet"}
+          </span>
+
+          {currentCode && (
+            <button
+              onClick={handleCopy}
+              className="text-muted-foreground hover:text-primary transition-all"
+            >
+              {copied ? (
+                <span className="text-green-500 font-semibold">Copied!</span>
+              ) : (
+                <Copy size={18} />
+              )}
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
