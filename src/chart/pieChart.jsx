@@ -17,6 +17,7 @@ const ClientsGraphicalData = ({ tokens }) => {
     ];
 
     for (let obj of tokens) {
+             if(obj.status!="access granted") return;
                 console.log('--->',JSON.stringify(obj));
           // eslint-disable-next-line default-case
           switch (obj.expiry) {
