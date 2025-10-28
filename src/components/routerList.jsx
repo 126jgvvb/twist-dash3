@@ -1,39 +1,51 @@
-
-
-export const RouterList=({headerList,list})=>{
-
-    const sumUp=(str)=>{
-     let val=Array.from(str).reduce((a,b)=>Number(a)+Number(b),0);
+export const RouterList = ({ headerList, list }) => {
+  const sumUp = (str) => {
+    let val = Array.from(str).reduce((a, b) => Number(a) + Number(b), 0);
     return val;
-    }
+  };
 
-    return <div className={'bg-card ml-20 py-12 px-5 overflow-x-auto  relative mx-5 my-8 max-h-screen items-center justify-center space-y-8'} >
-   
-   <div className={" mx-auto max-w-4xl whitespace-nowrap container flex space-x-3 md:grid md:grid-cols-5 "} >
-     {
-      headerList.map((navItem,key)=>(
-          <a key={key} className={"text-foreground font-bold text-xl "} >
-              {navItem}
-          </a>
-      ))
-    }
-     </div>
-   
-    <div className={"  rounded-[12px] max-sm:w-[620px] overflow-x-hidden  max-w-4xl overflow-y-hidden max-h-80 space-x-4 mx-auto "} >
-    {
-        list.map((item,key)=>(
-            <div key={key} className={"grid grid-cols-5 md:gap-5 bg-graph-area mb-6 w-full justify-center items-center text-primary hover:text-foreground"} >
-                <span>{item.name}</span>
-                <span>{item.routerIP}</span>
-                <span>{item.holderNumber}</span>
-                <span>{item.status?'Active':'Off'}</span>
-                <span>{sumUp(item.connections)}</span>
+  return (
+    <div className="bg-card ml-20 py-8 px-4 md:px-8 mx-5 my-8 rounded-xl shadow-lg border border-border/20">
+      {/* Header */}
+      <div className="sticky top-0 z-10 bg-muted/70 backdrop-blur-md border-b border-border/30 px-2 py-3 rounded-t-xl">
+        <div className="grid grid-cols-5 text-center font-semibold text-foreground text-sm md:text-base uppercase tracking-wide">
+          {headerList.map((heading, key) => (
+            <span key={key}>{heading}</span>
+          ))}
+        </div>
+      </div>
+
+      {/* List items */}
+      <div className="max-h-[60vh] overflow-y-auto overflow-x-auto mt-3 rounded-b-xl custom-scrollbar">
+        {list.length > 0 ? (
+          list.map((item, key) => (
+            <div
+              key={key}
+              className="grid grid-cols-5 text-center text-sm md:text-base px-2 py-3 mb-2 bg-graph-area/40 rounded-lg hover:bg-graph-area/70 hover:shadow-lg hover:shadow-primary/10 transition-all duration-200 ease-in-out cursor-pointer"
+            >
+              <span className="font-medium">{item.name}</span>
+              <span className="font-mono">{item.routerIP}</span>
+              <span>{item.holderNumber || "—"}</span>
+              <span>
+                <span
+                  className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                    item.status
+                      ? "bg-green-500/20 text-green-400 border border-green-500/40"
+                      : "bg-red-500/20 text-red-400 border border-red-500/40"
+                  }`}
+                >
+                  {item.status ? "Active" : "Off"}
+                </span>
+              </span>
+              <span className="font-bold text-primary">{sumUp(item.connections)}</span>
             </div>
-        ))
-    }
-     </div>
-    </div>  
-    
-    
-    
-}
+          ))
+        ) : (
+          <div className="text-center py-10 text-muted-foreground italic">
+            No routers found
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
