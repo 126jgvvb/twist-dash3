@@ -52,7 +52,7 @@ export const ClientDashboard = () => {
       setIsLoading(true);
       
       try {
-        const response = await fetch(`${SERVER_IP}/users/dashboard`, {
+        const response = await fetch(`${SERVER_IP2}/users/dashboard`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -154,7 +154,7 @@ export const ClientDashboard = () => {
     setIsGenerating(true);
 
     try {
-      const response = await fetch(`${SERVER_IP}/users/vouchers`, {
+      const response = await fetch(`${SERVER_IP2}/users/vouchers`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
