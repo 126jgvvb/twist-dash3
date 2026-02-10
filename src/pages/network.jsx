@@ -1,4 +1,4 @@
-import SERVER_IP from "../serverIP";
+import { SERVER_IP } from "../serverIP";
 import EncryptData from "../encryption";
 
 let val=false;

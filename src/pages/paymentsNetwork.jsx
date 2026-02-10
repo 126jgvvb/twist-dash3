@@ -1,4 +1,4 @@
-import SERVER_IP from "../serverIP";
+import { SERVER_IP2 } from "../serverIP";
 import EncryptData from "../encryption";
 
 export const paymentsNetworkObject = {
@@ -8,7 +8,7 @@ export const paymentsNetworkObject = {
      */
     getDashboardData: async () => {
         try {
-            const response = await fetch(`${SERVER_IP}/dashboard`, {
+            const response = await fetch(`${SERVER_IP2}/dashboard`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -33,7 +33,7 @@ export const paymentsNetworkObject = {
      */
     getRecentTransactions: async () => {
         try {
-            const response = await fetch(`${SERVER_IP}/dashboard/transactions`, {
+            const response = await fetch(`${SERVER_IP2}/dashboard/transactions`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -58,7 +58,7 @@ export const paymentsNetworkObject = {
      */
     getWallets: async () => {
         try {
-            const response = await fetch(`${SERVER_IP}/dashboard/wallets`, {
+            const response = await fetch(`${SERVER_IP2}/dashboard/wallets`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -83,7 +83,7 @@ export const paymentsNetworkObject = {
      */
     getRecentPayments: async () => {
         try {
-            const response = await fetch(`${SERVER_IP}/dashboard/payments`, {
+            const response = await fetch(`${SERVER_IP2}/dashboard/payments`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -108,7 +108,7 @@ export const paymentsNetworkObject = {
      */
     getRecentWithdrawals: async () => {
         try {
-            const response = await fetch(`${SERVER_IP}/dashboard/withdrawals`, {
+            const response = await fetch(`${SERVER_IP2}/dashboard/withdrawals`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -133,7 +133,7 @@ export const paymentsNetworkObject = {
      */
     getWebhookLogs: async () => {
         try {
-            const response = await fetch(`${SERVER_IP}/dashboard/webhook-logs`, {
+            const response = await fetch(`${SERVER_IP2}/dashboard/webhook-logs`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -159,7 +159,7 @@ export const paymentsNetworkObject = {
      */
     deleteWallet: async (walletId) => {
         try {
-            const response = await fetch(`${SERVER_IP}/wallets/${walletId}`, {
+            const response = await fetch(`${SERVER_IP2}/wallets/${walletId}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -184,7 +184,7 @@ export const paymentsNetworkObject = {
      */
     freezeWallet: async (walletId) => {
         try {
-            const response = await fetch(`${SERVER_IP}/wallets/${walletId}/freeze`, {
+            const response = await fetch(`${SERVER_IP2}/wallets/${walletId}/freeze`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -210,7 +210,7 @@ export const paymentsNetworkObject = {
      */
     unfreezeWallet: async (walletId) => {
         try {
-            const response = await fetch(`${SERVER_IP}/wallets/${walletId}/unfreeze`, {
+            const response = await fetch(`${SERVER_IP2}/wallets/${walletId}/unfreeze`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -238,7 +238,7 @@ export const paymentsNetworkObject = {
      */
     transferFunds: async (fromWalletId, toWalletId, amount) => {
         try {
-            const response = await fetch(`${SERVER_IP}/wallets/transfer`, {
+            const response = await fetch(`${SERVER_IP2}/wallets/transfer`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import serverIP from "../serverIP";
+import {SERVER_IP as serverIP} from "../serverIP";
 
 const adminID=localStorage.getItem('verified-user');
 

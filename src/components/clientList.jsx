@@ -2,7 +2,7 @@ import { ClientFooter } from "./clientFooter";
 import { useState } from "react";
 import { networkObject } from "../pages/network";
 import { CircleNotch } from "phosphor-react";
-import SERVER_IP from "../serverIP";
+import { SERVER_IP } from "../serverIP";
 
 export const ClientsList=({headerList,list})=>{
     const [priceX, SetPrice] = useState('1000/=');
