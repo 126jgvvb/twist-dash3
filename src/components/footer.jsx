@@ -3,7 +3,12 @@ import { useState } from "react";
 import { networkObject } from "../pages/network";
 
 export const Footer = ({ adminDetails }) => {
-  const admin = adminDetails;
+  const admin = adminDetails || {
+    username: 'Unknown',
+    uniqueID: 'N/A',
+    email: 'N/A',
+    phoneNumber: 'N/A'
+  };
   const [changingNumber, setIsChangingNumber] = useState(false);
   const [changingPassword, setIsChangingPassword] = useState(false);
 

@@ -8,8 +8,14 @@
 --color-primary:hsl(var(--primary));
 --color-primary-foreground:hsl(var(--primary-foreground));
 
+--color-secondary:hsl(var(--secondary));
+--color-secondary-foreground:hsl(var(--secondary-foreground));
+
+--color-accent:hsl(var(--accent));
+--color-accent-foreground:hsl(var(--accent-foreground));
 
 --color-card:hsl(var(--card));
+--color-card-foreground:hsl(var(--card-foreground));
 
 --color-graph-area:hsl(var(--graph-area));
 
@@ -45,31 +51,45 @@
 
 @layer base {
   :root {
-    --background: 210 40% 98%;
+    --background: 0 0% 100%;
     --foreground: 222 47% 11%;
   
-    --card: 0 0%  90%;
+    --card: 0 0% 98%;
+    --card-foreground: 222 47% 11%;
 
-    --graph-area: 220 40% 90%;
+    --graph-area: 210 40% 98%;
   
-    --primary:250 47% 60%;
-    --primary-foreground:210 40% 98%;
+    --primary: 280 65% 60%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 220 90% 60%;
+    --secondary-foreground: 210 40% 98%;
+
+    --accent: 0 84% 60%;
+    --accent-foreground: 210 40% 98%;
   
-    --border:214 32% 0%;
+    --border: 214 32% 91%;
   }
 
   .dark{
-    --background:222 47% 4%;
+    --background:223 47% 11%;
     --foreground:213 31% 91%;
 
-    --card: 222 47% 6%;
+    --card: 222 47% 14%;
+    --card-foreground: 213 31% 91%;
 
-    --graph-area:  110 0% 8%;
+    --graph-area: 220 40% 12%;
 
-    --primary:250 65% 65%;
-    --primary-foreground:213 31% 91%;
+    --primary: 280 65% 60%;
+    --primary-foreground: 210 40% 98%;
 
-    --border:247 73% 100%;
+    --secondary: 220 90% 60%;
+    --secondary-foreground: 210 40% 98%;
+
+    --accent: 0 84% 60%;
+    --accent-foreground: 210 40% 98%;
+
+    --border: 220 13% 20%;
   }
 
   *{
@@ -86,9 +106,6 @@
    }
   
   }
-
-
- 
 
 @utility container {
 margin-inline:auto;
@@ -136,14 +153,31 @@ padding-inline:2rem;
   padding:10px;
 }
 
-@utility zoe-button{
-  @apply px-2 py-2 rounded-full bg-primary text-primary-foreground font-medium;
-  transition-all duration-300 hover:shadow-[0_0_10px_rgba(139,92,246,0.5)];
+@utility gradient-button{
+  @apply px-6 py-3 rounded-lg font-medium text-primary-foreground;
+  background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
+  transition-all duration-300 hover:shadow-[0_0_20px_rgba(167,139,250,0.5)];
   hover:scale-105 active:scale-95;
 }
 
 @utility graph-height{
-  @apply min-h-[12rem];
+  @apply min-h-[14rem] max-h-[16rem];
+}
+
+@utility glass-card{
+  @apply bg-card/80 backdrop-blur-md rounded-2xl border border-border/50 shadow-lg;
+}
+
+@utility status-dot{
+  @apply w-3 h-3 rounded-full mr-2;
+}
+
+@utility router-status-active{
+  @apply bg-green-500 status-dot;
+}
+
+@utility router-status-inactive{
+  @apply bg-red-500 status-dot;
 }
 
 
@@ -162,9 +196,9 @@ padding-inline:2rem;
   height: 8px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: rgba(100, 100, 255, 0.3);
+  background-color: rgba(167, 139, 250, 0.3);
   border-radius: 10px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(100, 100, 255, 0.5);
+  background-color: rgba(167, 139, 250, 0.5);
 }

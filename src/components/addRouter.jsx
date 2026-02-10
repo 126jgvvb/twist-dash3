@@ -48,64 +48,56 @@ export const AddRouter = () => {
   };
 
   return (
-    <div className="bg-card rounded-xl shadow-md border border-border/20 py-10 px-6 md:px-12 mx-5 my-10 max-w-5xl mx-auto">
-      <h2 className="text-2xl font-semibold text-foreground mb-6 text-center">
-        Add New Router
-      </h2>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {/* Router Name */}
-        <div className="flex flex-col space-y-3">
-          <label htmlFor="router-name" className="text-sm font-semibold">
-            Router Name
-          </label>
-          <input
-            id="router-name"
-            type="text"
-            placeholder="e.g., EAP110-Lobby"
-            className="w-full py-2 px-3 rounded-lg bg-background border border-border focus:border-primary focus:ring-2 focus:ring-primary/50 outline-none transition-all duration-200"
-          />
-        </div>
-
-        {/* Holder Number */}
-        <div className="flex flex-col space-y-3">
-          <label htmlFor="router-digits" className="text-sm font-semibold">
-            Holder Number
-          </label>
-          <input
-            id="router-digits"
-            type="text"
-            placeholder="+256*********"
-            className="w-full py-2 px-3 rounded-lg bg-background border border-border focus:border-primary focus:ring-2 focus:ring-primary/50 outline-none transition-all duration-200"
-          />
-        </div>
-
-        {/* Router MAC / IP */}
-        <div className="flex flex-col space-y-3">
-          <label htmlFor="router-ip" className="text-sm font-semibold">
-            Router MAC / IP
-          </label>
-          <input
-            id="router-ip"
-            type="text"
-            placeholder="e.g., 192.168.0.1 or A4:B2:C3:D4:E5:F6"
-            className="w-full py-2 px-3 rounded-lg bg-background border border-border focus:border-primary focus:ring-2 focus:ring-primary/50 outline-none transition-all duration-200"
-          />
-        </div>
-
-        {/* Submit Button */}
-        <div className="flex items-end md:col-span-3 justify-center">
-          <button
-            onClick={addRouter}
-            disabled={isAddingRouter}
-            className={`w-full md:w-1/3 py-2.5 rounded-lg font-medium text-primary-foreground bg-gradient-to-r from-indigo-500 to-green-500 shadow-md hover:shadow-lg hover:shadow-indigo-500/30 transition-all duration-300 ${
-              isAddingRouter ? "opacity-70 cursor-not-allowed" : "hover:scale-105 active:scale-95"
-            }`}
-          >
-            {isAddingRouter ? "Saving..." : "Save Router"}
-          </button>
-        </div>
+    <div className="space-y-4">
+      {/* Router Name */}
+      <div className="space-y-2">
+        <label htmlFor="router-name" className="text-sm font-medium text-foreground">
+          Router Name
+        </label>
+        <input
+          id="router-name"
+          type="text"
+          placeholder="e.g., Main Lobby"
+          className="w-full px-4 py-3 rounded-lg bg-muted/20 border border-border/50 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all duration-200"
+        />
       </div>
+
+      {/* Holder Number */}
+      <div className="space-y-2">
+        <label htmlFor="router-digits" className="text-sm font-medium text-foreground">
+          Holder Number
+        </label>
+        <input
+          id="router-digits"
+          type="text"
+          placeholder="+256 700 000000"
+          className="w-full px-4 py-3 rounded-lg bg-muted/20 border border-border/50 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all duration-200"
+        />
+      </div>
+
+      {/* Router MAC / IP */}
+      <div className="space-y-2">
+        <label htmlFor="router-ip" className="text-sm font-medium text-foreground">
+          Router MAC / IP
+        </label>
+        <input
+          id="router-ip"
+          type="text"
+          placeholder="e.g., 192.168.1.1"
+          className="w-full px-4 py-3 rounded-lg bg-muted/20 border border-border/50 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all duration-200"
+        />
+      </div>
+
+      {/* Submit Button */}
+      <button
+        onClick={addRouter}
+        disabled={isAddingRouter}
+        className={`w-full py-3 rounded-lg font-medium text-primary-foreground gradient-button transition-all duration-300 ${
+          isAddingRouter ? "opacity-70 cursor-not-allowed" : "hover:scale-105 active:scale-95"
+        }`}
+      >
+        {isAddingRouter ? "Saving..." : "Save Router"}
+      </button>
     </div>
   );
 };

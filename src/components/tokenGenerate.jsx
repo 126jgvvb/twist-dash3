@@ -22,7 +22,6 @@ export const GenerateToken = ({ code }) => {
   const [copied, setCopied] = useState(false);
   const dispatch = useDispatch();
 
-  // Handle select input
   const handleTimeFrameChange = (event) => {
     const value = event.target.value;
     if (value === "----select time frame------") {
@@ -35,7 +34,6 @@ export const GenerateToken = ({ code }) => {
     setSelectedExpiry(expirySeconds);
   };
 
-  // Notify server and generate new token
   const notifyServerAbtNewToken = async () => {
     if (!selectedExpiry) {
       alert("Please select a valid timeframe before generating a token.");
@@ -66,7 +64,6 @@ export const GenerateToken = ({ code }) => {
     }
   };
 
-  // Copy token to clipboard
   const handleCopy = async () => {
     await navigator.clipboard.writeText(currentCode);
     setCopied(true);
@@ -74,68 +71,60 @@ export const GenerateToken = ({ code }) => {
   };
 
   return (
-    <div className="bg-card py-10 px-8 mx-auto my-10 rounded-xl shadow-lg max-w-2xl space-y-10">
-      {/* Header */}
-      <h2 className="text-2xl font-bold text-center text-primary">Generate Access Token</h2>
-
-      {/* Timeframe Selection */}
-      <div className="flex flex-col space-y-4">
-        <label className="text-lg font-semibold text-foreground">
+    <div className="space-y-6">
+      <div className="space-y-4">
+        <label className="text-sm font-medium text-foreground">
           Select Timeframe
         </label>
         <select
           onChange={handleTimeFrameChange}
-          className="bg-background border border-border rounded-lg p-3 text-sm focus:ring-2 focus:ring-primary focus:outline-none"
+          className="w-full px-4 py-3 rounded-lg bg-card border border-border/50 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all duration-200"
           defaultValue="----select time frame------"
         >
-          <option>----select time frame------</option>
+          <option className="bg-card text-foreground">----Select Time Base----</option>
           {clientTimeFrames.map((frame, index) => (
-            <option key={index}>{frame}</option>
+            <option key={index} className="bg-card text-foreground">
+              {frame}
+            </option>
           ))}
         </select>
       </div>
 
-      {/* Generate Button */}
-      <div className="flex justify-center">
-        <button
-          onClick={notifyServerAbtNewToken}
-          disabled={isSending}
-          className={`px-6 py-3 rounded-full text-white font-medium transition-all duration-300 ${
-            isSending
-              ? "bg-primary/70 cursor-not-allowed"
-              : "bg-primary hover:shadow-lg hover:scale-105"
-          }`}
-        >
-          {isSending ? (
-            <span className="flex items-center gap-2">
-              <LoaderIcon className="animate-spin" size={18} /> Generating...
-            </span>
-          ) : (
-            "Generate Token"
-          )}
-        </button>
-      </div>
+      <button
+        onClick={notifyServerAbtNewToken}
+        disabled={isSending}
+        className={`w-full py-3 rounded-lg font-medium text-primary-foreground gradient-button transition-all duration-300 ${
+          isSending ? "opacity-70 cursor-not-allowed" : "hover:scale-105 active:scale-95"
+        }`}
+      >
+        {isSending ? (
+          <span className="flex items-center justify-center gap-2">
+            <LoaderIcon className="animate-spin" size={18} /> Generating...
+          </span>
+        ) : (
+          "⚡ Generate Token"
+        )}
+      </button>
 
-      {/* Token Display */}
-      <div className="flex flex-col items-center space-y-3 text-center">
-        <span className="text-lg font-semibold text-foreground">
-          Your Token Code:
+      <div className="space-y-3">
+        <span className="text-sm font-medium text-muted-foreground">
+          YOUR TOKEN CODE
         </span>
-        <div className="flex items-center gap-3 bg-muted px-5 py-3 rounded-lg shadow-inner">
+        <div className="flex items-center justify-between p-4 bg-muted/20 rounded-lg border border-border/50">
           <span
             id="token-code"
             className="text-xl font-bold tracking-wide text-primary break-all"
           >
-            {currentCode || "No token yet"}
+            {currentCode || "1234"}
           </span>
-
+          
           {currentCode && (
             <button
               onClick={handleCopy}
-              className="text-muted-foreground hover:text-primary transition-all"
+              className="p-2 rounded-lg text-muted-foreground hover:bg-muted hover:text-primary transition-all"
             >
               {copied ? (
-                <span className="text-green-500 font-semibold">Copied!</span>
+                <span className="text-green-500 font-semibold text-sm">Copied!</span>
               ) : (
                 <Copy size={18} />
               )}

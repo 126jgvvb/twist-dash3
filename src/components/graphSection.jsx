@@ -52,15 +52,15 @@ export const GraphSection = ({ routers = [], runningCodes = [] }) => {
   }
 
   return (
-    <section className="py-20 px-4">
+    <section className="py-4 px-4">
       <div className="container mx-auto max-w-5xl">
         <div
-          className="bg-card rounded-2xl shadow-md p-6 space-y-8 transition-all duration-300 hover:shadow-lg"
+          className="bg-card rounded-2xl shadow-md p-6 space-y-4 transition-all duration-300 hover:shadow-lg"
           onMouseEnter={pauseAutoSlide}
           onMouseLeave={resumeAutoSlide}
         >
           {/* Graphs */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 transition-all duration-500 ease-in-out">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 transition-all duration-500 ease-in-out">
             <ClientsGraphicalData tokens={data} />
             <BarX tokens={data} />
           </div>

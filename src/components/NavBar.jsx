@@ -1,116 +1,128 @@
 import { useEffect, useState } from "react";
 import { cn } from "../utils";
-import { Bell, Circle, Menu, RainbowIcon, X } from "lucide-react";
+import { Bell, Circle, Menu, X, Wifi, Activity, Key, Server, FileText, Settings, LogOut, CreditCard } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
-let currentAdmin="delos X";
-const navItems=['Dashboard','Other Admins','Notifications','Change Theme', 'Logout' ];
-const admins=[
-    {
-        name:"delos X",
-        pic:"/assets/admin.jpg",
-        alt:"delos X admin"
-    },
-    {
-        name:"delos 3X",
-        pic:"/assets/admin.jpg",
-         alt:"delos 3X admin"
-    },
-    {
-        name:"delos 4X",
-        pic:"/assets/admin.jpg",
-         alt:"delos 4X admin"
-    }
-]
+const navItems = [
+    { name: 'Dashboard', icon: Activity, path: '/' },
+    { name: 'Live Monitoring', icon: Activity, path: '/monitoring' },
+    { name: 'Token Management', icon: Key, path: '/tokens' },
+    { name: 'Router Config', icon: Server, path: '/routers' },
+    { name: 'Packages', icon: FileText, path: '/packages' },
+    { name: 'Payments', icon: CreditCard, path: '/payments' },
+    { name: 'Settings', icon: Settings, path: '/settings' }
+];
 
-export const NavBar=({admin})=>{
-    const [isScrolled,setScrolled]=useState(false);
-    const [isMenuOpen,setMenu]=useState(false);
-    const [isSmallScreen,setScreen]=useState(true);
-    let [selectedAdmin,selectAdmin]= useState({pic:"/assets/admin.jpg",name:admin.username});
-    let filteredNavItems=navItems.filter((item)=>(
-        item!='Notifications' && item!='Change Theme'
-    ));
+export const NavBar = ({ admin }) => {
+    const [isScrolled, setScrolled] = useState(false);
+    const [isMenuOpen, setMenu] = useState(false);
+    const [isSmallScreen, setScreen] = useState(true);
+    const [activeItem, setActiveItem] = useState('Dashboard');
+    const navigate = useNavigate();
 
+    const handleScroll = () => {
+        return setScrolled(window.innerHeight > 10);
+    };
+    
+    const alterScreen = () => {
+        window.innerWidth < 640 ? setScreen(true) : setScreen(false);
+    };
 
-    const handlScroll=()=>{ return setScrolled(window.innerHeight>10); }
-    const alterScreen=()=>{ (window.innerWidth<640+"px") ? setScreen(true) : setScreen(false) }
-
-
-    useEffect(()=>{
-        window.addEventListener('scroll',handlScroll);
-        window.addEventListener('resize',alterScreen);
-        //this filtering returns an array,so we take index at 0
-        selectAdmin(admins.filter((admin)=>(admin.name==currentAdmin))[0]);
+    useEffect(() => {
+        window.addEventListener('scroll', handleScroll);
+        window.addEventListener('resize', alterScreen);
         
-        filteredNavItems=navItems.filter((item)=>(
-            item!='Notifications' && item!='Change Theme'
-        ));
+        return () => {
+            window.removeEventListener("scroll", handleScroll);
+            window.removeEventListener("resize", alterScreen);
+        };
+    }, []);
 
-        return ()=>window.removeEventListener("scroll",handlScroll);
-    },[]);
+    return (
+        <>
+            {/* Mobile menu trigger */}
+            {isSmallScreen && (
+                <button
+                    onClick={() => setMenu(!isMenuOpen)}
+                    className="fixed left-4 top-4 z-50 p-2 rounded-lg bg-card/80 backdrop-blur-md border border-border/50 text-foreground md:hidden"
+                >
+                    {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                </button>
+            )}
 
-
-    return <nav className={cn("fixed w-full z-40 transition-all bg-card duration-300",
-       isScrolled ? "py-3 bg-background/80 backdrop-blur-md shadow-xs ":"py-5"
-    )}  >
-
-        <div className={"container flex items-center justify-between"} >
-            
-            <span className={"rounded-full border   "} >
-                <img className={"w-12 h-12 rounded-full "} src={selectedAdmin.pic} alt={selectedAdmin.name} />
-                
-                <div className={"overlow-x-hidden max-sm:hidden  w-[10px] top-4 left-35 whitespace-nowrap md:absolute"} >
-                <span className={"container flex flex-col "} >
-                    <h3>{selectedAdmin.name}</h3>
-                    <span className={"text-sm text-primary/70"} >Super Admin</span>
-                    </span>
+            <nav 
+                className={cn(
+                    "fixed left-0 top-0 h-full bg-card/90 backdrop-blur-md border-r border-border/50 z-50 transition-all duration-300",
+                    isMenuOpen || !isSmallScreen ? "w-64" : "w-20 md:hover:w-64"
+                )}
+                onMouseEnter={() => !isSmallScreen && setMenu(true)}
+                onMouseLeave={() => !isSmallScreen && setMenu(false)}
+            >
+                <div className="p-6 border-b border-border/50 flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center flex-shrink-0">
+                        <Wifi size={20} className="text-primary-foreground" />
                     </div>
+                    <div className="hidden md:block transition-all duration-300 overflow-hidden">
+                        <h1 className="text-xl font-bold text-foreground">TwistNet</h1>
+                        <p className="text-xs text-muted-foreground">Admin Portal</p>
+                    </div>
+                </div>
 
-            </span>
+                <div className="p-4">
+                    <ul className="space-y-2">
+                        {navItems.map((navItem, key) => {
+                            const Icon = navItem.icon;
+                            return (
+                                <li key={key}>
+                                    <button
+                                        onClick={() => {
+                                            setActiveItem(navItem.name);
+                                            navigate(navItem.path);
+                                            if (isSmallScreen) {
+                                                setMenu(false);
+                                            }
+                                        }}
+                                        className={cn(
+                                            "w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300",
+                                            activeItem === navItem.name
+                                                ? "bg-primary/20 text-primary border border-primary/30"
+                                                : "text-muted-foreground hover:bg-muted/50 hover:text-foreground hover:border border-border/30"
+                                        )}
+                                    >
+                                        <Icon size={18} className="flex-shrink-0" />
+                                        <span className={cn("hidden md:block transition-all duration-300 overflow-hidden")}>
+                                            {navItem.name}
+                                        </span>
+                                    </button>
+                                </li>
+                            );
+                        })}
+                    </ul>
 
-            <span className="relative z-20 text-xl font-bold flex" >
-                <span className="text-glow text-foreground">TWIST ADMIN</span>
-            </span>
+                    <div className="mt-8 pt-6 border-t border-border/50">
+                        <button className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted/50 hover:text-red-400 hover:border border-border/30 transition-all duration-300">
+                            <LogOut size={18} className="flex-shrink-0" />
+                            <span className={cn("hidden md:block transition-all duration-300 overflow-hidden")}>
+                                Logout Account
+                            </span>
+                        </button>
+                    </div>
+                </div>
 
-  
+                <div className="absolute bottom-6 left-0 right-0 text-center">
+                    <p className="text-xs text-muted-foreground hidden md:block">
+                        © 2028 chargedMax
+                    </p>
+                </div>
+            </nav>
 
-
-
-        { /*desktop nav */ }
-        <div className={"hidden md:flex space-x-4"}  >
-          {
-            filteredNavItems.map((navItem,key)=>(
-                <a key={key} className={"text-foreground hover:text-primary transition-colors duration-300"} >
-                    {navItem}
-                </a>
-            ))
-          }
-        </div>
-
-
-        { /*mobile nav  */ }
-        <button aria-label={`${isMenuOpen ? 'Close Menu': 'Open Menu' }`}
-         onClick={()=>setMenu((preValue)=>!preValue)}
-         className={"md:hidden p-2 text-foreground z-10"}  >
-            {
-                isMenuOpen ? <X size={24} /> : <Menu size={24} />
-            }
-        </button>
-
-        <div className={cn("fixed inset-0 bg-background/95 backdrop-blur-md flex flex-col items-center justify-center",
-            "transition-all duration-300 md:hidden",
-            isMenuOpen ? "opacity-100 pointer-events-auto":"opacity-0 pointer-events-none"
-        )} >
-            <div className={"flex flex-col  space-y-5 "}>
-            {
-                navItems.map((item,key)=>(
-                    <a key={key} className={"text-foreground hover:text-primary transition-colors duration-300"} >
-                        {item}
-                    </a>
-                ))
-            }
-            </div>
-        </div>
-    </div>
-</nav>
-}
+            {/* Overlay for mobile */}
+            {isMenuOpen && isSmallScreen && (
+                <div 
+                    className="fixed inset-0 bg-black/50 z-40 md:hidden"
+                    onClick={() => setMenu(false)}
+                />
+            )}
+        </>
+    );
+};

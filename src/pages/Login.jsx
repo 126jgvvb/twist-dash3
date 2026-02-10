@@ -1,22 +1,20 @@
-import { HeaderSection } from "../components/headerSection";
 import { ThemeToggle } from "../components/ThemeToggle";
 import { networkObject } from "./network";
 import { Loader } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-export const Login=()=>{
-    const [statusText,setStatusText] = useState('forgot password?');
+export const Login = () => {
+    const [statusText, setStatusText] = useState('forgot password?');
     const [isloading, setLoading] = useState(false);
-    const [verified,setVerified]=useState(false);
-    const navigate=useNavigate();
+    const [verified, setVerified] = useState(false);
+    const navigate = useNavigate();
 
     const HandleLogin = async (idArray) => {
-
         for (const id of idArray) {
             const input = document.getElementById(id).value;
             if (input === '' || input === undefined) {
-                alert('Invalid nput');
+                alert('Invalid input');
                 return false;
             }
         }
@@ -31,7 +29,7 @@ export const Login=()=>{
         
         const LoginData = {
             username: username,
-            password:password
+            password: password
         }
 
         if (await networkObject.isNetworkError()) {
@@ -40,12 +38,12 @@ export const Login=()=>{
         }
 
         setLoading(true);
-        const result = networkObject.sendPostRequest(LoginData,'/admin/login-admin');
+        const result = networkObject.sendPostRequest(LoginData, '/admin/login-admin');
         
         return result.then((result) => {
             if (!result.data) {
                 setLoading(false);
-                alert('this admin does not to exist!!');
+                alert('this admin does not exist!!');
                 setVerified('Authentication failed');
             }
             else {
@@ -60,7 +58,7 @@ export const Login=()=>{
 
     }
 
-    const forgotPassword =async () => {
+    const forgotPassword = async () => {
         if (await networkObject.isNetworkError()) {
             alert('Network Error');
             return;
@@ -91,31 +89,61 @@ export const Login=()=>{
 
     }
 
-    return <section className={" mx-7 justify-center mt-[10%] items-center space-y-3"} >
-        <ThemeToggle/>
-       
-        <div className={"  container bg-card items-center text-center text-2xl "} >
-        <h1 className={"font-bold p-4 text-1xl md:text-2xl "} >
-                <span className={"animate-fade-in "} >
-                Welcome Back
-                </span>
-            </h1>
+    return (
+        <div className="min-h-screen bg-background flex items-center justify-center p-4">
+            <ThemeToggle />
+            
+            <div className="glass-card w-full max-w-md p-8">
+                <div className="text-center mb-8">
+                    <div className="flex justify-center mb-4">
+                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+                            <span className="text-2xl font-bold">T</span>
+                        </div>
+                    </div>
+                    <h1 className="text-2xl font-bold mb-2">Welcome Back</h1>
+                    <p className="text-muted-foreground">Sign in to your TwistNet dashboard</p>
+                </div>
+
+                <div className="space-y-6">
+                    <div className="space-y-2">
+                        <label htmlFor="admin-username" className="text-sm font-medium text-foreground">Admin Username</label>
+                        <input 
+                            id="admin-username" 
+                            type="text" 
+                            placeholder="Enter your username" 
+                            className="w-full px-4 py-3 rounded-lg bg-muted/20 border border-border/50 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                        />
+                    </div>
+
+                    <div className="space-y-2">
+                        <label htmlFor="admin-password" className="text-sm font-medium text-foreground">Admin Password</label>
+                        <input 
+                            id="admin-password" 
+                            type="password" 
+                            placeholder="Enter your password" 
+                            className="w-full px-4 py-3 rounded-lg bg-muted/20 border border-border/50 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                        />
+                    </div>
+
+                    <button 
+                        onClick={() => {HandleLogin(['admin-username','admin-password'])}} 
+                        className="w-full gradient-button py-3 font-medium"
+                    >
+                        {isloading ? <Loader className="animate-spin mx-auto" /> : 'Sign In'}
+                    </button>
+
+                    <p 
+                        onClick={() => {!isloading && forgotPassword() }} 
+                        className={"text-center text-sm text-muted-foreground hover:text-primary cursor-pointer transition-colors"}
+                    >
+                        {!isloading ? statusText : <Loader className="animate-spin mx-auto" size={16} />}
+                    </p>
+                </div>
+
+                <div className="text-center mt-6 text-sm text-muted-foreground">
+                    <p>Don't have an account? <a href="/signup" className="text-primary hover:underline">Create Account</a></p>
+                </div>
+            </div>
         </div>
-
-        <div className={"container bg-card mx-auto text-center p-3  justify-center space-y-3"} >
-        <div className={" flex flex-col space-y-3 w-full mx-auto text-xl"} >
-  <span>Admin username</span>
-  <span><input id="admin-username" type="text" placeholder="username" className={"gradient-border py-1 "} /></span>
-     </div>
-
-     <div className={" flex flex-col space-y-3 w-full mx-auto text-xl"} >
-  <span>Admin Password</span>
-  <span><input id="admin-password" type="text" placeholder="password" className={"gradient-border py-1 "} /></span>
-     </div>
-
-     <button onClick={()=>{HandleLogin(['admin-username','admin-password'])}} className={"zoe-button px-2 py-2 rounded-full bg-primary text-primary-foreground font-medium  transition-all duration-300 hover:shadow-[0_0_10px_rgba(139,92,246,0.5)]  hover:scale-105 active:scale-95 w-1/2 ml-3 "} >Login</button>
-      
-      <p onClick={()=>{!isloading&&forgotPassword() }} className={"text-foreground  hover:text-primary text-xl"} >{!isloading?statusText:<Loader className="ml-[50%] animate-spin "/>}</p>
-        </div>
-    </section>
+    );
 }

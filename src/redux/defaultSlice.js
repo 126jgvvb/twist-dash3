@@ -72,33 +72,41 @@ const initialState={
                 name:'1 month',
                 amount:'ugx.18000'
                }],
-        routerList:[
+         routerList:[
                 {
                     name:"router 1",
                     holder:"0741882818",
+                    holderPhoneNumber:"+256741882818",
                     mac:"***********",
+                    routerIP:"192.168.1.101",
                     status:"active",
                     connections:3
                 },
                 {
-                    name:"router 1",
-                    holder:"0741882818",
+                    name:"router 2",
+                    holder:"0741882819",
+                    holderPhoneNumber:"+256741882819",
                     mac:"***********",
+                    routerIP:"192.168.1.102",
                     status:"active",
-                    connections:3
+                    connections:2
                 },
                 {
-                    name:"router 1",
-                    holder:"0741882818",
+                    name:"router 3",
+                    holder:"0741882820",
+                    holderPhoneNumber:"+256741882820",
                     mac:"***********",
+                    routerIP:"192.168.1.103",
                     status:"active",
-                    connections:3
+                    connections:5
                 }, {
-                    name:"router 1",
-                    holder:"0741882818",
+                    name:"router 4",
+                    holder:"0741882821",
+                    holderPhoneNumber:"+256741882821",
                     mac:"***********",
+                    routerIP:"192.168.1.104",
                     status:"active",
-                    connections:3
+                    connections:4
                 },
             ],
             listOfItems:[
@@ -153,6 +161,16 @@ reducers:{
     },
     addPackage:(state,action)=>{
         state.dynamicData.amountList=state.dynamicData.amountList.push(action.payload);
+    },
+    removeRouter:(state,action)=>{
+        state.dynamicData.routerList=state.dynamicData.routerList.filter(
+            (router)=>router.routerIP!==action.payload.routerIP
+        );
+    },
+    removeToken:(state,action)=>{
+        state.dynamicData.runningCodes=state.dynamicData.runningCodes.filter(
+            (token)=>token.code!==action.payload.code
+        );
     }
 },
 extraReducers:(builder)=>{
@@ -261,7 +279,7 @@ export const getOnlineData=createAsyncThunk("get-redux-state",
 );
 
 //pingServer();
-export const {deletePackage,addRouter,addPackage,setPhoneNumber,setNewCode}=defaultSlice.actions;
+export const {deletePackage,addRouter,addPackage,setPhoneNumber,setNewCode,removeRouter,removeToken}=defaultSlice.actions;
 export default defaultSlice.reducer;
 
 

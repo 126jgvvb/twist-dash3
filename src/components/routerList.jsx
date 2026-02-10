@@ -1,16 +1,49 @@
+import { Trash2 } from "lucide-react";
+import { networkObject } from "../pages/network";
+import { useDispatch } from "react-redux";
+import { removeRouter } from "../redux/defaultSlice";
+
 export const RouterList = ({ headerList, list }) => {
   const sumUp = (str) => {
     let val = Array.from(str).reduce((a, b) => Number(a) + Number(b), 0);
     return val;
   };
 
+  const dispatch = useDispatch();
+
+  const handleDeleteRouter = async (routerName, routerIP) => {
+    if (confirm(`Are you sure you want to delete ${routerName}?`)) {
+      try {
+        const result = await networkObject.sendPostRequest(
+          { routerIP: routerIP },
+          '/admin/delete-router'
+        );
+        
+        if (result) {
+          dispatch(removeRouter({ routerIP }));
+          alert('Router deleted successfully');
+        } else {
+          alert('Failed to delete router');
+        }
+      } catch (error) {
+        console.error('Error deleting router:', error);
+        alert('Error deleting router');
+      }
+    }
+  };
+
   return (
-    <div className="bg-card w-[95%] md:w-[90%] lg:w-[80%] mx-auto py-8 px-4 md:px-8 my-8 rounded-xl shadow-lg border border-border/20 transition-all duration-300">
+    <div className="glass-card p-6">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-muted/80 backdrop-blur-md border-b border-border/30 px-2 py-3 rounded-t-xl">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-bold">All Routers</h2>
+        <p className="text-sm text-muted-foreground">{list.length} routers</p>
+      </div>
+
+      <div className="sticky top-0 z-10 bg-card/80 backdrop-blur-md border-b border-border/30 px-2 py-3 rounded-t-xl">
         <div
           className="
-            grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5
+            grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6
             text-center font-semibold text-foreground
             text-xs sm:text-sm md:text-base uppercase tracking-wide
           "
@@ -20,6 +53,7 @@ export const RouterList = ({ headerList, list }) => {
               {heading}
             </span>
           ))}
+          <span className="truncate">Actions</span>
         </div>
       </div>
 
@@ -30,10 +64,10 @@ export const RouterList = ({ headerList, list }) => {
             <div
               key={key}
               className="
-                grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5
+                grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6
                 text-center text-xs sm:text-sm md:text-base
                 px-2 py-3 mb-2 rounded-lg
-                bg-graph-area/40 hover:bg-graph-area/70
+                bg-muted/30 hover:bg-muted/50
                 hover:shadow-lg hover:shadow-primary/10
                 transition-all duration-200 ease-in-out
                 cursor-pointer
@@ -69,6 +103,20 @@ export const RouterList = ({ headerList, list }) => {
               <span className="font-bold text-primary">
                 {sumUp(item.connections)}
               </span>
+
+              {/* Column 6: Actions */}
+              <span className="flex justify-center">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteRouter(item.name, item.routerIP);
+                  }}
+                  className="p-1 rounded-lg text-red-400 hover:bg-red-500/20 transition-colors"
+                  title="Delete Router"
+                >
+                  <Trash2 size={16} />
+                </button>
+              </span>
             </div>
           ))
         ) : (
@@ -80,4 +128,3 @@ export const RouterList = ({ headerList, list }) => {
     </div>
   );
 };
-
