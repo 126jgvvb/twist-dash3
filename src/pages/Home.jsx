@@ -60,7 +60,7 @@ export const Home = () => {
     return <div className="min-h-screen bg-background text-foreground overflow-x-hidden" >
         <NavBar admin={adminDetails} />
         
-        <main className="p-4 md:p-8 max-w-7xl mx-auto">
+        <main className="p-4 md:p-8 max-w-7xl mx-auto pt-20 md:pt-0 md:ml-20 md:hover:ml-64 transition-all duration-300">
             <div className="flex justify-between items-center mb-8">
                 <div>
                     <h1 className="text-2xl md:text-3xl font-bold text-foreground">Dashboard Overview</h1>
