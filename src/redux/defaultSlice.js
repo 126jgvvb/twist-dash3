@@ -171,6 +171,9 @@ reducers:{
         state.dynamicData.runningCodes=state.dynamicData.runningCodes.filter(
             (token)=>token.code!==action.payload.code
         );
+    },
+    logOut:(state)=>{
+        localStorage.removeItem('verified-user');
     }
 },
 extraReducers:(builder)=>{
@@ -279,7 +282,7 @@ export const getOnlineData=createAsyncThunk("get-redux-state",
 );
 
 //pingServer();
-export const {deletePackage,addRouter,addPackage,setPhoneNumber,setNewCode,removeRouter,removeToken}=defaultSlice.actions;
+export const {deletePackage,addRouter,addPackage,setPhoneNumber,setNewCode,removeRouter,removeToken,logOut}=defaultSlice.actions;
 export default defaultSlice.reducer;
 
 
