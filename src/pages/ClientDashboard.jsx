@@ -562,7 +562,7 @@ export const ClientDashboard = () => {
                <select
                  value={voucherForm.duration}
                  onChange={(e) => setVoucherForm(prev => ({ ...prev, duration: e.target.value }))}
-                 className="w-full px-4 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50"
+                 className="w-full px-4 py-2 bg-black/20 border border-white/30 rounded-lg text-black placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50"
                >
                  <option value="1hr">1 Hour</option>
                  <option value="2hr">2 Hours</option>
