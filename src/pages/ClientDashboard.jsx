@@ -37,6 +37,8 @@ export const ClientDashboard = () => {
     duration: '1hr' // Changed from timeframe to duration to match backend
   });
   const [isGenerating, setIsGenerating] = useState(false);
+  const [withdrawAmount, setWithdrawAmount] = useState('');
+  const [isWithdrawing, setIsWithdrawing] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -101,19 +103,68 @@ export const ClientDashboard = () => {
   };
 
   const handleWithdraw = async () => {
-    const amount = prompt('Enter withdrawal amount:');
-    if (amount && parseInt(amount) > 0 && parseInt(amount) <= balance) {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      setBalance(prev => prev - parseInt(amount));
-      setWithdrawals(prev => [
-        { id: Date.now().toString(), amount: parseInt(amount), date: new Date().toISOString().split('T')[0], status: 'Pending' },
-        ...prev
-      ]);
-      
-      alert('Withdrawal request submitted!');
+    if(balance<=0){
+      alert('You have insufficient funds');
+      return;
     }
+
+    const amount = parseInt(withdrawAmount);
+    if (!amount || amount<10000 || amount > balance) {
+      alert('The minimum withdraw amount is UGX 10,000.');
+      return;
+    }
+    
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/client-login');
+      return;
+    }
+    
+    // Get user's phone number from localStorage
+    const user = JSON.parse(localStorage.getItem('user'));
+    const phoneNumber = user?.phoneNumber;
+    
+    if (!phoneNumber) {
+      alert('Phone number not found. Please update your profile.');
+      return;
+    }
+    
+    setIsWithdrawing(true);
+    
+    try {
+      const response = await fetch(`${SERVER_IP2}/users/withdraw`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount: amount,
+          phoneNumber: phoneNumber,
+          provider: 'MTN'
+        }),
+      });
+      
+      const result = await response.json();
+      
+      if (result.status=='Success') {
+        setBalance(prev => prev - amount);
+        setWithdrawals(prev => [
+          { id: Date.now().toString(), amount: amount, date: new Date().toISOString().split('T')[0], status: 'Pending' },
+          ...prev
+        ]);
+        alert('Withdrawal request submitted successfully!');
+      } else {
+        alert(result.message || 'Withdrawal failed. Please try again.');
+      }
+    } catch (error) {
+      console.error('Withdrawal error:', error);
+      alert('Withdrawal failed. Please try again.');
+    } finally {
+      setIsWithdrawing(false);
+    }
+    
+    setWithdrawAmount('');
   };
 
   const generateTokenId = () => {
@@ -340,11 +391,29 @@ export const ClientDashboard = () => {
                 </div>
               </div>
             </div>
+            {/* the minimum amount to withdraw is ugx.10,000 */}
+            <input
+              type="number"
+              min="10000"
+              max={balance}
+              value={withdrawAmount}
+              onChange={(e) => setWithdrawAmount(e.target.value)}
+              className="w-full px-4 py-2 mb-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50"
+              placeholder={`Enter amount (min UGX 10,000, max UGX ${balance.toLocaleString()})`}
+            />
             <button
               onClick={handleWithdraw}
-              className="w-full py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-200"
+              disabled={isWithdrawing}
+              className="w-full py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              Withdraw Funds
+              {isWithdrawing ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Processing...
+                </>
+              ) : (
+                'Withdraw Funds'
+              )}
             </button>
           </div>
 
@@ -630,7 +699,11 @@ export const ClientDashboard = () => {
               <tbody>
                 {withdrawals.map((withdrawal) => (
                   <tr key={withdrawal.id} className="border-b border-white/10 hover:bg-white/5">
-                    <td className="py-3 px-4 text-white">{withdrawal.date}</td>
+                    <td className="py-3 px-4 text-white">
+                      {withdrawal.date ? (
+                        format(new Date(withdrawal.date), 'MMM dd, yyyy')
+                      ) : 'N/A'}
+                    </td>
                     <td className="py-3 px-4 text-white">UGX {withdrawal.amount.toLocaleString()}</td>
                     <td className="py-3 px-4">
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${

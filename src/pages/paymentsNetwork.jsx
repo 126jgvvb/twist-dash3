@@ -153,6 +153,31 @@ export const paymentsNetworkObject = {
     },
 
     /**
+     * Gets platform revenue data
+     * @returns Promise<object>
+     */
+    getPlatformRevenue: async () => {
+        try {
+            const response = await fetch(`${SERVER_IP2}/dashboard/platform-revenue`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Error getting platform revenue:', error);
+            return false;
+        }
+    },
+
+    /**
      * Deletes a wallet
      * @param walletId - ID of the wallet to delete
      * @returns Promise<boolean>
@@ -258,6 +283,297 @@ export const paymentsNetworkObject = {
             return data;
         } catch (error) {
             console.error('Error transferring funds:', error);
+            return false;
+        }
+    },
+
+    // ==================== IOTEC CONTROLLER METHODS ====================
+
+    /**
+     * Collect funds from client via IOTEC collections API
+     * @param params - { amount, payer, externalId?, payerNote?, payeeNote?, currency?, category?, walletId, transactionChargesCategory? }
+     * @returns Promise<object>
+     */
+    collectFunds: async (params) => {
+        try {
+            const response = await fetch(`${SERVER_IP2}/iotec/collect`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(params),
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Error collecting funds:', error);
+            return false;
+        }
+    },
+
+    /**
+     * Mobile money transfer via IOTEC
+     * @param params - { amount, phoneNumber, reference?, payee?, currency?, bankId?, bankTransferType?, sendAt? }
+     * @returns Promise<object>
+     */
+    mobileMoneyTransfer: async (params) => {
+        try {
+            const response = await fetch(`${SERVER_IP2}/iotec/mobile-money`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(params),
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Error with mobile money transfer:', error);
+            return false;
+        }
+    },
+
+    /**
+     * Bank transfer via IOTEC
+     * @param params - { amount, accountNumber, bankName, reference? }
+     * @returns Promise<object>
+     */
+    bankTransfer: async (params) => {
+        try {
+            const response = await fetch(`${SERVER_IP2}/iotec/bank-transfer`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(params),
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Error with bank transfer:', error);
+            return false;
+        }
+    },
+
+    /**
+     * Approve or reject a disbursement
+     * @param params - { disbursementId, decision (boolean), remarks? }
+     * @returns Promise<object>
+     */
+    approveDisbursement: async (params) => {
+        try {
+            const response = await fetch(`${SERVER_IP2}/iotec/disbursement/approve`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(params),
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Error approving disbursement:', error);
+            return false;
+        }
+    },
+
+    /**
+     * Get all disbursements with optional filtering
+     * @param params - { limit?, offset?, status?, category?, fromDate?, toDate? }
+     * @returns Promise<object[]>
+     */
+    getDisbursements: async (params = {}) => {
+        try {
+            const response = await fetch(`${SERVER_IP2}/iotec/disbursements`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Error getting disbursements:', error);
+            return false;
+        }
+    },
+
+    /**
+     * Get transaction status by transactionId
+     * @param transactionId - Transaction ID to check
+     * @returns Promise<object>
+     */
+    getTransactionStatus: async (transactionId) => {
+        try {
+            const response = await fetch(`${SERVER_IP2}/iotec/transaction/${transactionId}/status`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Error getting transaction status:', error);
+            return false;
+        }
+    },
+
+    /**
+     * Get wallet balance (main platform wallet)
+     * @returns Promise<object>
+     */
+    getWalletBalance: async () => {
+        try {
+            const response = await fetch(`${SERVER_IP2}/iotec/wallet/balance`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Error getting wallet balance:', error);
+            return false;
+        }
+    },
+
+    /**
+     * Get wallet balance by walletId
+     * @param walletId - Wallet ID to check balance
+     * @returns Promise<object>
+     */
+    getWalletBalanceById: async (walletId) => {
+        try {
+            const response = await fetch(`${SERVER_IP2}/iotec/wallet/${walletId}/balance`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Error getting wallet balance by ID:', error);
+            return false;
+        }
+    },
+
+    /**
+     * Cancel a pending disbursement
+     * @param params - { disbursementId, decision (boolean), remarks? }
+     * @returns Promise<object>
+     */
+    cancelDisbursement: async (params) => {
+        try {
+            const response = await fetch(`${SERVER_IP2}/iotec/disbursement/cancel`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(params),
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Error cancelling disbursement:', error);
+            return false;
+        }
+    },
+
+    /**
+     * Get paged disbursement request history
+     * @param params - { page?, pageSize?, status?, category?, fromDate?, toDate? }
+     * @returns Promise<object>
+     */
+    getDisbursementHistory: async (params = {}) => {
+        try {
+            const response = await fetch(`${SERVER_IP2}/iotec/disbursements/history`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Error getting disbursement history:', error);
+            return false;
+        }
+    },
+
+    /**
+     * Get all IOTEC transactions
+     * @returns Promise<object[]>
+     */
+    getIotecTransactions: async () => {
+        try {
+            const response = await fetch(`${SERVER_IP2}/iotec/transactions`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Error getting IOTEC transactions:', error);
             return false;
         }
     }
