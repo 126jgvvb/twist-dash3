@@ -562,7 +562,7 @@ export const ClientDashboard = () => {
                <select
                  value={voucherForm.duration}
                  onChange={(e) => setVoucherForm(prev => ({ ...prev, duration: e.target.value }))}
-                 className="w-full px-4 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50"
+                 className="w-full px-4 py-2 bg-black/20 border border-white/30 rounded-lg text-black placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50"
                >
                  <option value="1hr">1 Hour</option>
                  <option value="2hr">2 Hours</option>
@@ -579,7 +579,7 @@ export const ClientDashboard = () => {
           <div className="flex gap-4 mt-6">
             <button
               onClick={handleVoucherGenerate}
-              disabled={isGenerating || balance < 5000}
+              disabled={true/*isGenerating || balance < 5000*/}
               className="flex-1 py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50"
             >
               {isGenerating ? (
@@ -587,7 +587,7 @@ export const ClientDashboard = () => {
                   <RefreshCw className="w-4 h-4 animate-spin" />
                   Generating...
                 </>
-              ) : balance < 5000 ? (
+              ) : balance < 200000 ? (  //change these values
                 <>
                   <Zap className="w-4 h-4" />
                   Insufficient Balance (UGX 5000 Required)
