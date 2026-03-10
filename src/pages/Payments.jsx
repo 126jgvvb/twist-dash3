@@ -185,6 +185,14 @@ export const Payments = () => {
 
     const handleMobileMoneyTransfer = async (e) => {
         e.preventDefault();
+        
+        // Validate phone number - must be at least 10 digits
+        const phoneDigits = mobileMoneyModal.phoneNumber.replace(/\D/g, '');
+        if (phoneDigits.length < 10) {
+            alert('Phone number must be at least 10 digits');
+            return;
+        }
+        
         setProcessingAction(true);
         try {
             const result = await paymentsNetworkObject.mobileMoneyTransfer({

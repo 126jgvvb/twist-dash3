@@ -94,9 +94,9 @@ export const ClientsList=({headerList,list})=>{
 
         if ((/[a-zA-Z]/.test(phoneNumber) ||
             (/[*&^%$#@!]/.test(phoneNumber)) ||
-            phoneNumber.length !== 10
+            phoneNumber.length < 10
         )) {
-            alert('Invalid Phone Number Input');
+            alert('Invalid Phone Number Input - must be at least 10 digits');
             return false;
         }
 

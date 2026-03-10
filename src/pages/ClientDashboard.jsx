@@ -14,14 +14,13 @@ import {
   Router,
   Copy,
   RefreshCw,
-  Zap,
   CheckCircle2,
   XCircle
 } from 'lucide-react';
 import { ClientFooter } from '../components/clientFooter';
 import { format } from 'date-fns';
 import jsPDF from 'jspdf';
-import { SERVER_IP2 } from '../serverIP';
+import { SERVER_IP, SERVER_IP2 } from '../serverIP';
 import ClientsGraphicalData from '../chart/pieChart';
 import BarX from '../chart/barGraph';
 
@@ -33,12 +32,26 @@ export const ClientDashboard = () => {
   const [currentVouchers, setCurrentVouchers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [voucherForm, setVoucherForm] = useState({
-    quantity: 1,
+    quantity: 5,
     duration: '1hr' // Changed from timeframe to duration to match backend
   });
   const [isGenerating, setIsGenerating] = useState(false);
   const [withdrawAmount, setWithdrawAmount] = useState('');
   const [isWithdrawing, setIsWithdrawing] = useState(false);
+  
+  // Price calculation state
+  const VOUCHER_PRICE = 100; // UGX 100 per voucher
+  const TRANSACTION_FEE_PERCENT = 0.04; // 4% transaction fee
+  const [showPaymentDialog, setShowPaymentDialog] = useState(false);
+  const [paymentPhone, setPaymentPhone] = useState('');
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [paymentError, setPaymentError] = useState('');
+  
+  // Calculate total price
+  const totalPrice = voucherForm.quantity * VOUCHER_PRICE;
+  const transactionFee = Math.round(totalPrice * TRANSACTION_FEE_PERCENT);
+  const grandTotal = totalPrice + transactionFee;
+  
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -190,12 +203,77 @@ export const ClientDashboard = () => {
     return expiryTime.toISOString();
   };
 
-  const handleVoucherGenerate = async () => {
-    if (voucherForm.quantity < 1 || voucherForm.quantity > 100) {
-      alert('Please enter a quantity between 1 and 100');
+  const handleShowPaymentDialog = () => {
+    if (voucherForm.quantity < 5 || voucherForm.quantity > 100) {
+      alert('Please enter a quantity between 5 and 100');
+      return;
+    }
+    setPaymentError('');
+    setShowPaymentDialog(true);
+  };
+
+  const handleVoucherGenerate = () => {
+    handleShowPaymentDialog();
+  };
+
+  const handlePaymentAndGenerate = async () => {
+    // Validate phone number
+    const phoneRegex = /^07\d{8,}$/;
+    const cleanPhone = paymentPhone.replace(/\s/g, '');
+    
+    if (!cleanPhone || !phoneRegex.test(cleanPhone)) {
+      setPaymentError('Please enter a valid phone number (minimum 10 digits starting with 07)');
       return;
     }
 
+    setIsProcessingPayment(true);
+    setPaymentError('');
+
+    try {
+      // Step 1: Process Mobile Money Payment
+      const paymentResponse = await fetch(`${SERVER_IP2}/iotec/collect-voucher-print`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          category: 'MobileMoney',
+          currency: 'UGX',
+          walletId: '019c5fe7-dfb7-7608-a607-7597e65309b0',//ignored
+          externalId: '001',
+          payer: cleanPhone,
+          payerNote: 'Customer Payment',
+          amount: grandTotal,
+          payeeNote: '',
+          channel: null,
+          transactionChargesCategory: 'ChargeWallet'
+        }),
+      });
+
+      const paymentResult = await paymentResponse.json();
+
+      console.log('RESPONSE:', paymentResult);
+      
+      if (paymentResponse.ok && (paymentResult.statusCode === 200 || paymentResult.code) && paymentResult.status=='Success') {
+        // Payment successful - Close dialog and proceed to generate vouchers
+        setShowPaymentDialog(false);
+        
+        // Step 2: Generate vouchers after successful payment
+        await generateVouchers();
+      } else {
+        // Payment failed
+        const errorMsg = paymentResult.message || paymentResult.result?.message || 'Payment failed. Please try again.';
+        setPaymentError(errorMsg);
+      }
+    } catch (error) {
+      console.error('Payment error:', error);
+      setPaymentError('Payment failed. Please check your internet connection and try again.');
+    } finally {
+      setIsProcessingPayment(false);
+    }
+  };
+
+  const generateVouchers = async () => {
     const token = localStorage.getItem('token');
     if (!token) {
       navigate('/client-login');
@@ -539,7 +617,7 @@ export const ClientDashboard = () => {
             </div>
             <div className="flex-1">
               <h2 className="text-xl font-bold text-white">Generate Vouchers</h2>
-              <p className="text-yellow-400 text-sm mt-1">Premium Feature - UGX 5000 per generation</p>
+              <p className="text-yellow-400 text-sm mt-1">UGX {VOUCHER_PRICE} per voucher (+ 4% fee)</p>
             </div>
           </div>
           
@@ -548,10 +626,10 @@ export const ClientDashboard = () => {
               <label className="block text-white/80 text-sm font-medium mb-2">Quantity</label>
               <input
                 type="number"
-                min="1"
+                min="5"
                 max="100"
                 value={voucherForm.quantity}
-                onChange={(e) => setVoucherForm(prev => ({ ...prev, quantity: parseInt(e.target.value) }))}
+                onChange={(e) => setVoucherForm(prev => ({ ...prev, quantity: parseInt(e.target.value) || 5 }))}
                 className="w-full px-4 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50"
                 placeholder="Enter quantity"
               />
@@ -576,26 +654,38 @@ export const ClientDashboard = () => {
              </div>
           </div>
 
+          {/* Price Calculation Widget */}
+          <div className="mt-6 bg-gradient-to-r from-blue-600/30 to-purple-600/30 rounded-xl p-4 border border-white/20">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-white/80 text-sm">Total to Pay</p>
+                <div className="text-2xl font-bold text-white">
+                  UGX {grandTotal.toLocaleString()}
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-white/60 text-xs">{voucherForm.quantity} voucher{voucherForm.quantity !== 1 ? 's' : ''} × UGX {VOUCHER_PRICE}</p>
+                <p className="text-yellow-400 text-xs">+ UGX {transactionFee.toLocaleString()} (4% fee)</p>
+                <p className="text-green-400 text-sm font-medium">{voucherForm.duration}</p>
+              </div>
+            </div>
+          </div>
+
           <div className="flex gap-4 mt-6">
             <button
               onClick={handleVoucherGenerate}
-              disabled={true/*isGenerating || balance < 5000*/}
+              disabled={isGenerating || isProcessingPayment}
               className="flex-1 py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50"
             >
-              {isGenerating ? (
+              {isGenerating || isProcessingPayment ? (
                 <>
                   <RefreshCw className="w-4 h-4 animate-spin" />
-                  Generating...
-                </>
-              ) : balance < 200000 ? (  //change these values
-                <>
-                  <Zap className="w-4 h-4" />
-                  Insufficient Balance (UGX 5000 Required)
+                  Processing...
                 </>
               ) : (
                 <>
                   <Plus className="w-4 h-4" />
-                  Generate Vouchers
+                  Generate Vouchers (UGX {grandTotal.toLocaleString()})
                 </>
               )}
             </button>
@@ -722,6 +812,120 @@ export const ClientDashboard = () => {
 
       {/* Footer */}
       <ClientFooter />
+
+      {/* Mobile Money Payment Dialog */}
+      {showPaymentDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+            onClick={() => !isProcessingPayment && setShowPaymentDialog(false)}
+          />
+          
+          {/* Dialog Content */}
+          <div className="relative w-full max-w-md bg-gradient-to-br from-blue-500 via-purple-600 to-blue-600 rounded-3xl p-6 border border-white/30 shadow-2xl z-10 backdrop-blur-lg bg-opacity-90">
+            {/* Close Button */}
+            <button
+              onClick={() => !isProcessingPayment && setShowPaymentDialog(false)}
+              disabled={isProcessingPayment}
+              className="absolute top-4 right-4 text-white/60 hover:text-white disabled:opacity-50"
+            >
+              <XCircle className="w-6 h-6" />
+            </button>
+
+            {/* Header */}
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 flex items-center justify-center shadow-lg">
+                <CreditCard className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-white">Pay with Mobile Money</h3>
+              <p className="text-white/60 text-sm mt-1">Complete payment to generate vouchers</p>
+            </div>
+
+            {/* Order Summary */}
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 mb-6 border border-white/20">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-white/80">Quantity</span>
+                <span className="text-white font-medium">{voucherForm.quantity} voucher{voucherForm.quantity !== 1 ? 's' : ''}</span>
+              </div>
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-white/80">Duration</span>
+                <span className="text-white font-medium">{voucherForm.duration}</span>
+              </div>
+              <div className="border-t border-white/10 mt-2 pt-2">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-white/80">Subtotal</span>
+                  <span className="text-white">UGX {totalPrice.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-white/60 text-sm">Transaction Fee (4%)</span>
+                  <span className="text-white/60 text-sm">UGX {transactionFee.toLocaleString()}</span>
+                </div>
+                <div className="border-t border-white/20 mt-2 pt-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-white font-semibold">Total</span>
+                    <span className="text-green-400 font-bold text-xl">UGX {grandTotal.toLocaleString()}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Phone Input */}
+            <div className="mb-4">
+              <label className="block text-white/80 text-sm font-medium mb-2">Phone Number</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <svg className="h-5 w-5 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                  </svg>
+                </div>
+                <input
+                  type="tel"
+                  value={paymentPhone}
+                  onChange={(e) => setPaymentPhone(e.target.value)}
+                  placeholder="07XX XXX XXX"
+                  disabled={isProcessingPayment}
+                  className="block w-full pl-12 pr-4 py-3 bg-white/10 border border-white/30 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white disabled:opacity-50"
+                />
+              </div>
+              {paymentError && (
+                <p className="text-red-400 text-sm mt-2">{paymentError}</p>
+              )}
+            </div>
+
+            {/* Pay Button */}
+            <button
+              onClick={handlePaymentAndGenerate}
+              disabled={isProcessingPayment}
+              className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-500 hover:to-blue-500 disabled:from-gray-600 disabled:to-gray-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 flex justify-center items-center space-x-2 disabled:opacity-50"
+            >
+              {isProcessingPayment ? (
+                <>
+                  <RefreshCw size={20} className="animate-spin" />
+                  <span>Processing Payment...</span>
+                </>
+              ) : (
+                <>
+                  <span>Pay UGX {grandTotal.toLocaleString()}</span>
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </>
+              )}
+            </button>
+
+            {/* Cancel Button */}
+            {!isProcessingPayment && (
+              <button
+                onClick={() => setShowPaymentDialog(false)}
+                className="w-full mt-3 text-white/60 hover:text-white text-sm font-medium py-2 transition-colors"
+              >
+                Cancel
+              </button>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

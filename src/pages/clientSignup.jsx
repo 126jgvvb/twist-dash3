@@ -23,6 +23,13 @@ export const ClientSignup = () => {
       return;
     }
 
+    // Validate phone number - must be at least 10 digits
+    const phoneDigits = formData.phoneNumber.replace(/\D/g, '');
+    if (phoneDigits.length < 10) {
+      alert('Phone number must be at least 10 digits');
+      return;
+    }
+
     setIsLoading(true);
 
     try {

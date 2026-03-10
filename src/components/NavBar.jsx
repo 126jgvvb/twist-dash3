@@ -77,6 +77,15 @@ function NavBar() {
         <>
             {/* Mobile top navigation bar - visible only on small screens */}
             <div className="fixed top-0 left-0 right-0 bg-card/90 backdrop-blur-md border-b border-border/50 z-50 p-4 flex items-center justify-between">
+                {/* Payments button - visible on mobile - positioned on the left */}
+                <button
+                    onClick={() => navigate('/payments')}
+                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium md:hidden"
+                >
+                    <CreditCard size={16} />
+                    <span>Billing</span>
+                </button>
+                
                 <div className="flex items-center gap-2">
                     <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center flex-shrink-0">
                         <Wifi size={18} className="text-primary-foreground" />

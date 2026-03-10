@@ -17,7 +17,7 @@ export const Footer = ({ adminDetails }) => {
 
     if (
       newPhoneNumber &&
-      /^\d{10}$/.test(newPhoneNumber)
+      /^\d{10,}$/.test(newPhoneNumber)
     ) {
       if (await networkObject.isNetworkError()) {
         alert("Network Error");
@@ -43,7 +43,7 @@ export const Footer = ({ adminDetails }) => {
         setIsChangingNumber(false);
       }
     } else {
-      alert("Please enter a valid 10-digit phone number.");
+      alert("Please enter a valid phone number (minimum 10 digits).");
     }
   };
 
