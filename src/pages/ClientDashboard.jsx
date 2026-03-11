@@ -624,25 +624,30 @@ export const ClientDashboard = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-white/80 text-sm font-medium mb-2">Quantity</label>
-              <div className="relative">
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setVoucherForm(prev => ({ ...prev, quantity: Math.max(5, prev.quantity - 1) }))}
+                  className="w-10 h-10 flex items-center justify-center rounded-lg bg-white/20 border border-white/30 text-white text-xl font-bold hover:bg-white/30 active:bg-white/40 transition-colors"
+                >
+                  -
+                </button>
                 <input
                   type="number"
                   min="5"
                   max="100"
                   value={voucherForm.quantity}
-                  onChange={(e) => setVoucherForm(prev => ({ ...prev, quantity: parseInt(e.target.value) || 5 }))}
-                  className="w-full px-4 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 [appearance:textfield] [&::-webkit-outer-spin-button]:opacity-50 [&::-webkit-inner-spin-button]:opacity-50"
-                  placeholder="Enter quantity"
+                  onChange={(e) => setVoucherForm(prev => ({ ...prev, quantity: Math.min(100, Math.max(5, parseInt(e.target.value) || 5)) }))}
+                  className="flex-1 px-4 py-2 bg-white/20 border border-white/30 rounded-lg text-white text-center font-medium focus:outline-none focus:ring-2 focus:ring-white/50 [appearance:textfield] [&::-webkit-outer-spin-button]:opacity-0 [&::-webkit-inner-spin-button]:opacity-0"
+                  placeholder="Qty"
                 />
-                {/* Custom spinner buttons for mobile */}
-                <div className="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col pointer-events-none">
-                  <svg className="w-3 h-3 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                  </svg>
-                  <svg className="w-3 h-3 text-white/60 -mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </div>
+                <button
+                  type="button"
+                  onClick={() => setVoucherForm(prev => ({ ...prev, quantity: Math.min(100, prev.quantity + 1) }))}
+                  className="w-10 h-10 flex items-center justify-center rounded-lg bg-white/20 border border-white/30 text-white text-xl font-bold hover:bg-white/30 active:bg-white/40 transition-colors"
+                >
+                  +
+                </button>
               </div>
             </div>
             
