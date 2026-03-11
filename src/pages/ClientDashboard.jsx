@@ -624,15 +624,26 @@ export const ClientDashboard = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-white/80 text-sm font-medium mb-2">Quantity</label>
-              <input
-                type="number"
-                min="5"
-                max="100"
-                value={voucherForm.quantity}
-                onChange={(e) => setVoucherForm(prev => ({ ...prev, quantity: parseInt(e.target.value) || 5 }))}
-                className="w-full px-4 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50"
-                placeholder="Enter quantity"
-              />
+              <div className="relative">
+                <input
+                  type="number"
+                  min="5"
+                  max="100"
+                  value={voucherForm.quantity}
+                  onChange={(e) => setVoucherForm(prev => ({ ...prev, quantity: parseInt(e.target.value) || 5 }))}
+                  className="w-full px-4 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 [appearance:textfield] [&::-webkit-outer-spin-button]:opacity-50 [&::-webkit-inner-spin-button]:opacity-50"
+                  placeholder="Enter quantity"
+                />
+                {/* Custom spinner buttons for mobile */}
+                <div className="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col pointer-events-none">
+                  <svg className="w-3 h-3 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                  </svg>
+                  <svg className="w-3 h-3 text-white/60 -mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
             </div>
             
             <div>
