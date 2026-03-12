@@ -729,7 +729,7 @@ export const ClientDashboard = () => {
           </div>
 
           {linkedRouters.map((router) => {
-            alert(router.macAddress);
+           // alert(router.macAddress);
             // Filter vouchers belonging to this router
             const routerVouchers = generatedTokens.filter(token => 
               token.router === router.macAddress || token.router.includes(router.macAddress)
