@@ -42,6 +42,7 @@ export const Payments = () => {
         reference: '',
     });
     const [processingAction, setProcessingAction] = useState(false);
+    const [showMobileMoneyConfirmation, setShowMobileMoneyConfirmation] = useState(false);
     const [filterType, setFilterType] = useState('all');
     const [searchPhone, setSearchPhone] = useState('');
 
@@ -193,16 +194,37 @@ export const Payments = () => {
             return;
         }
         
+        // Check if platform income is greater than UGX 10,000 before allowing withdrawal
+        const platformIncome = platformRevenue?.currentRevenue || 0;
+        const withdrawalAmount = parseFloat(mobileMoneyModal.amount);
+        if (platformIncome <= 10000) {
+            alert('Withdrawal not allowed. Platform income must be greater than UGX 10,000.');
+            return;
+        }
+        
+        // Show confirmation dialog with fee breakdown
+        setShowMobileMoneyConfirmation(true);
+    };
+    
+    // Handle the actual mobile money transfer after confirmation
+    const confirmMobileMoneyTransfer = async () => {
+        const withdrawalAmount = parseFloat(mobileMoneyModal.amount);
+        setShowMobileMoneyConfirmation(false);
         setProcessingAction(true);
         try {
             const result = await paymentsNetworkObject.mobileMoneyTransfer({
-                amount: parseFloat(mobileMoneyModal.amount),
+                amount: withdrawalAmount,
                 phoneNumber: mobileMoneyModal.phoneNumber,
+                payee: mobileMoneyModal.phoneNumber,
                 reference: mobileMoneyModal.reference || `momo-${Date.now()}`,
             });
             
             if (result) {
-                alert(`Mobile money transfer initiated! Status: ${result.status || 'Pending'}`);
+                if (result.status === 'Success' || result.status === 'Pending') {
+                    alert(`Mobile money transfer initiated! Status: ${result.status || 'Pending'}\n\nAmount: UGX ${withdrawalAmount.toLocaleString()}\nFee: UGX 600\nYou will receive: UGX ${(withdrawalAmount - 600).toLocaleString()}`);
+                } else {
+                    alert(`Mobile money transfer status: ${result.status}`);
+                }
                 setMobileMoneyModal({ isOpen: false, amount: '', phoneNumber: '', reference: '' });
                 // Refresh transactions
                 const newTrans = await paymentsNetworkObject.getIotecTransactions();
@@ -212,10 +234,17 @@ export const Payments = () => {
             }
         } catch (error) {
             console.error('Error with mobile money transfer:', error);
-            alert('Error initiating mobile money transfer');
+            // Extract error message from backend response
+            const errorMessage = error.message || error.response?.data?.message || 'Error initiating mobile money transfer';
+            alert(errorMessage);
         } finally {
             setProcessingAction(false);
         }
+    };
+    
+    // Cancel confirmation and go back to form
+    const cancelMobileMoneyConfirmation = () => {
+        setShowMobileMoneyConfirmation(false);
     };
 
     const handleBankTransfer = async (e) => {
@@ -881,65 +910,110 @@ export const Payments = () => {
                 {mobileMoneyModal.isOpen && (
                     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
                         <div className="bg-background rounded-lg p-6 w-full max-w-md">
-                            <h3 className="text-xl font-bold mb-4">Mobile Money Transfer</h3>
-                            <p className="text-muted-foreground mb-4">Send money to a mobile money account</p>
-                            <form onSubmit={handleMobileMoneyTransfer}>
-                                <div className="mb-4">
-                                    <label className="block text-sm font-medium text-foreground mb-2">
-                                        Amount (UGX)
-                                    </label>
-                                    <input
-                                        type="number"
-                                        value={mobileMoneyModal.amount}
-                                        onChange={(e) => setMobileMoneyModal({ ...mobileMoneyModal, amount: e.target.value })}
-                                        className="w-full px-3 py-2 bg-muted border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                                        placeholder="Enter amount"
-                                        required
-                                    />
-                                </div>
-                                <div className="mb-4">
-                                    <label className="block text-sm font-medium text-foreground mb-2">
-                                        Phone Number
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={mobileMoneyModal.phoneNumber}
-                                        onChange={(e) => setMobileMoneyModal({ ...mobileMoneyModal, phoneNumber: e.target.value })}
-                                        className="w-full px-3 py-2 bg-muted border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                                        placeholder="e.g., 2567XXXXXXXXX"
-                                        required
-                                    />
-                                </div>
-                                <div className="mb-4">
-                                    <label className="block text-sm font-medium text-foreground mb-2">
-                                        Reference (Optional)
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={mobileMoneyModal.reference}
-                                        onChange={(e) => setMobileMoneyModal({ ...mobileMoneyModal, reference: e.target.value })}
-                                        className="w-full px-3 py-2 bg-muted border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                                        placeholder="Transaction reference"
-                                    />
-                                </div>
-                                <div className="flex space-x-3">
-                                    <button
-                                        type="button"
-                                        onClick={() => setMobileMoneyModal({ isOpen: false, amount: '', phoneNumber: '', reference: '' })}
-                                        className="flex-1 px-4 py-2 text-muted-foreground hover:text-foreground transition-colors"
-                                        disabled={processingAction}
-                                    >
-                                        Cancel
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50"
-                                        disabled={processingAction}
-                                    >
-                                        {processingAction ? 'Processing...' : 'Send'}
-                                    </button>
-                                </div>
-                            </form>
+                            {!showMobileMoneyConfirmation ? (
+                                <>
+                                    <h3 className="text-xl font-bold mb-4">Mobile Money Transfer</h3>
+                                    <p className="text-muted-foreground mb-4">Send money to a mobile money account</p>
+                                    <form onSubmit={handleMobileMoneyTransfer}>
+                                        <div className="mb-4">
+                                            <label className="block text-sm font-medium text-foreground mb-2">
+                                                Amount (UGX)
+                                            </label>
+                                            <input
+                                                type="number"
+                                                value={mobileMoneyModal.amount}
+                                                onChange={(e) => setMobileMoneyModal({ ...mobileMoneyModal, amount: e.target.value })}
+                                                className="w-full px-3 py-2 bg-muted border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                                                placeholder="Enter amount"
+                                                required
+                                            />
+                                        </div>
+                                        <div className="mb-4">
+                                            <label className="block text-sm font-medium text-foreground mb-2">
+                                                Phone Number
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={mobileMoneyModal.phoneNumber}
+                                                onChange={(e) => setMobileMoneyModal({ ...mobileMoneyModal, phoneNumber: e.target.value })}
+                                                className="w-full px-3 py-2 bg-muted border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                                                placeholder="e.g., 2567XXXXXXXXX"
+                                                required
+                                            />
+                                        </div>
+                                        <div className="mb-4">
+                                            <label className="block text-sm font-medium text-foreground mb-2">
+                                                Reference (Optional)
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={mobileMoneyModal.reference}
+                                                onChange={(e) => setMobileMoneyModal({ ...mobileMoneyModal, reference: e.target.value })}
+                                                className="w-full px-3 py-2 bg-muted border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                                                placeholder="Transaction reference"
+                                            />
+                                        </div>
+                                        <div className="flex space-x-3">
+                                            <button
+                                                type="button"
+                                                onClick={() => setMobileMoneyModal({ isOpen: false, amount: '', phoneNumber: '', reference: '' })}
+                                                className="flex-1 px-4 py-2 text-muted-foreground hover:text-foreground transition-colors"
+                                                disabled={processingAction}
+                                            >
+                                                Cancel
+                                            </button>
+                                            <button
+                                                type="submit"
+                                                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50"
+                                                disabled={processingAction}
+                                            >
+                                                {processingAction ? 'Processing...' : 'Send'}
+                                            </button>
+                                        </div>
+                                    </form>
+                                </>
+                            ) : (
+                                <>
+                                    <h3 className="text-xl font-bold mb-4">Confirm Withdrawal</h3>
+                                    <div className="mb-4 p-4 bg-muted rounded-lg">
+                                        <p className="text-sm text-muted-foreground mb-2">Withdrawal Summary</p>
+                                        <div className="flex justify-between mb-2">
+                                            <span className="text-foreground">Amount:</span>
+                                            <span className="text-foreground font-medium">UGX {parseFloat(mobileMoneyModal.amount || 0).toLocaleString()}</span>
+                                        </div>
+                                        <div className="flex justify-between mb-2">
+                                            <span className="text-muted-foreground">Fee (UGX 600):</span>
+                                            <span className="text-red-500">- UGX 600</span>
+                                        </div>
+                                        <div className="border-t border-border my-2"></div>
+                                        <div className="flex justify-between">
+                                            <span className="text-foreground font-medium">You will receive:</span>
+                                            <span className="text-green-500 font-bold">UGX {(parseFloat(mobileMoneyModal.amount || 0) - 600).toLocaleString()}</span>
+                                        </div>
+                                    </div>
+                                    <p className="text-sm text-muted-foreground mb-4">
+                                        A fee of UGX 600 will be deducted from your withdrawal. The net amount will be sent to your mobile money account.
+                                    </p>
+                                    <div className="flex space-x-3">
+                                        <button
+                                            type="button"
+                                            onClick={cancelMobileMoneyConfirmation}
+                                            className="flex-1 px-4 py-2 text-muted-foreground hover:text-foreground transition-colors"
+                                            disabled={processingAction}
+                                        >
+                                            Back
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={confirmMobileMoneyTransfer}
+                                            className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50"
+                                            disabled={processingAction}
+                                        >
+                                            {processingAction ? 'Processing...' : 'Confirm'}
+                                        </button>
+                                    </div>
+                                </>
+                            )}
                         </div>
                     </div>
                 )}

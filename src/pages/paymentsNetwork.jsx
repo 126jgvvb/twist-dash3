@@ -323,7 +323,7 @@ export const paymentsNetworkObject = {
      */
     mobileMoneyTransfer: async (params) => {
         try {
-            const response = await fetch(`${SERVER_IP2}/iotec/mobile-money`, {
+            const response = await fetch(`${SERVER_IP2}/iotec/admin-mobile-money`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
