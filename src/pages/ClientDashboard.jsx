@@ -18,6 +18,7 @@ import {
   XCircle
 } from 'lucide-react';
 import { ClientFooter } from '../components/clientFooter';
+import { BulkVoucherGenerator } from '../components/bulkVoucherGenerator';
 import { format } from 'date-fns';
 import jsPDF from 'jspdf';
 import { SERVER_IP, SERVER_IP2 } from '../serverIP';
@@ -295,34 +296,104 @@ export const ClientDashboard = () => {
       if (response.ok) {
         const data = await response.json();
         
-        // Automatically download vouchers as PDF
+        // Automatically download vouchers as PDF with same design as handleDownloadVouchers
         const doc = new jsPDF();
         const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
         
-        doc.setFontSize(20);
-        doc.text('Generated Voucher Details', pageWidth / 2, 20, { align: 'center' });
+        // Define theme colors
+        const primaryColor = [0, 0, 139]; // Dark Blue
         
-        let yPosition = 40;
-        data.vouchers.forEach(token => {
-          doc.setFontSize(12);
-          doc.text(`Voucher Code: ${token.tokenId}`, 20, yPosition);
-          doc.text(`Router: ${token.router}`, 20, yPosition + 10);
-          doc.text(`Duration: ${token.duration}`, 20, yPosition + 20);
-          doc.text(`Expires: ${format(new Date(token.expiryTime), 'MMM dd, hh:mm a')}`, 20, yPosition + 30);
-          
-          doc.setLineWidth(0.5);
-          doc.setDrawColor(150);
-          doc.line(20, yPosition + 35, pageWidth - 20, yPosition + 35);
-          
-          yPosition += 45;
-          
-          if (yPosition > 270) {
-            doc.addPage();
-            yPosition = 20;
-          }
+        // Add decorative header background
+        doc.setFillColor(...primaryColor);
+        doc.rect(0, 0, pageWidth, 35, 'F');
+        
+        // Header title
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(22);
+        doc.setFont("helvetica", "bold");
+        doc.text(`TwistNet Vouchers`, pageWidth / 2, 15, {
+          align: "center",
+        });
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "normal");
+        doc.text(`Generated: ${new Date().toLocaleDateString()}`, pageWidth / 2, 24, {
+          align: "center",
+        });
+        doc.setFontSize(10);
+        doc.text(`Duration: ${voucherForm.duration} | Total: ${data.vouchers.length} vouchers`, pageWidth / 2, 31, {
+          align: "center",
         });
         
-        doc.save(`vouchers-${new Date().toISOString().split('T')[0]}.pdf`);
+        // Reset text color for vouchers
+        doc.setTextColor(0, 0, 0);
+        
+        // Font size for vouchers (28 as requested)
+        const fontSize = 28;
+        const lineHeight = fontSize * 0.7; // Increased padding between vouchers
+        
+        let yPosition = 50; // Start position after header
+        let pageCount = 1;
+        
+        data.vouchers.forEach((token, index) => {
+          // Check if we need a new page
+          if (yPosition > pageHeight - 50) {
+            doc.addPage();
+            // Add decorative header on new page
+            doc.setFillColor(...primaryColor);
+            doc.rect(0, 0, pageWidth, 25, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(14);
+            doc.setFont("helvetica", "bold");
+            doc.text(`TwistNet Vouchers - Page ${pageCount + 1}`, pageWidth / 2, 15, {
+              align: "center",
+            });
+            doc.setTextColor(0, 0, 0);
+            yPosition = 40;
+            pageCount++;
+          }
+          
+          // Get the voucher code
+          const voucherCode = token.tokenId || token.code || "";
+          
+          // Add index number and voucher code combined
+          const indexText = `${index + 1}. `;
+          const fullText = indexText + voucherCode;
+          
+          // Add voucher code (bold, font size 28)
+          doc.setFontSize(fontSize);
+          doc.setFont("helvetica", "bold");
+          
+          // Center the full text (index + voucher)
+          const textWidth = doc.getTextWidth(fullText);
+          const xPosition = (pageWidth - textWidth) / 2;
+          
+          // Add voucher code to PDF (bold and centered)
+          doc.setTextColor(0, 0, 0);
+          doc.text(fullText, xPosition, yPosition);
+          
+          // Move to next line
+          yPosition += lineHeight;
+        });
+        
+        // Add footer with thank you message
+        const footerY = pageHeight - 20;
+        doc.setFillColor(...primaryColor);
+        doc.rect(0, footerY - 5, pageWidth, 25, 'F');
+        
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(14);
+        doc.setFont("helvetica", "bold");
+        doc.text("Thank you for choosing TwistNet!", pageWidth / 2, footerY + 3, {
+          align: "center",
+        });
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "normal");
+        doc.text("For any inquiries, feel free to call 0741882818", pageWidth / 2, footerY + 10, {
+          align: "center",
+        });
+        
+        doc.save(`${voucherForm.duration}-vouchers-${new Date().toISOString().split('T')[0]}.pdf`);
         
         alert(`Successfully generated ${voucherForm.quantity} voucher(s) for ${voucherForm.duration}\nPDF downloaded automatically`);
 
@@ -360,30 +431,100 @@ export const ClientDashboard = () => {
   const handleDownloadVouchers = () => {
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
     
-    doc.setFontSize(20);
-    doc.text('Generated Voucher Details', pageWidth / 2, 20, { align: 'center' });
+    // Define theme colors
+    const primaryColor = [0, 0, 139]; // Dark Blue
+    
+    // Add decorative header background
+    doc.setFillColor(...primaryColor);
+    doc.rect(0, 0, pageWidth, 35, 'F');
+    
+    // Header title
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(22);
+    doc.setFont("helvetica", "bold");
+    doc.text(`TwistNet Vouchers`, pageWidth / 2, 15, {
+      align: "center",
+    });
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "normal");
+    doc.text(`Generated: ${new Date().toLocaleDateString()}`, pageWidth / 2, 24, {
+      align: "center",
+    });
+    doc.setFontSize(10);
+    doc.text(`Total: ${generatedTokens.filter(token => token.createdBy === 'Client').length} vouchers`, pageWidth / 2, 31, {
+      align: "center",
+    });
+    
+    // Reset text color for vouchers
+    doc.setTextColor(0, 0, 0);
+    
+    // Font size for vouchers (28 as requested)
+    const fontSize = 28;
+    const lineHeight = fontSize * 0.7; // Increased padding between vouchers
     
     const tokenData = generatedTokens.filter(token => token.createdBy === 'Client');
     
-    let yPosition = 40;
-    tokenData.forEach(token => {
-      doc.setFontSize(12);
-      doc.text(`Voucher Code: ${token.tokenId}`, 20, yPosition);
-      doc.text(`Router: ${token.router}`, 20, yPosition + 10);
-      doc.text(`Duration: ${token.duration}`, 20, yPosition + 20);
-      doc.text(`Expires: ${format(new Date(token.expiryTime), 'MMM dd, hh:mm a')}`, 20, yPosition + 30);
-      
-      doc.setLineWidth(0.5);
-      doc.setDrawColor(150);
-      doc.line(20, yPosition + 35, pageWidth - 20, yPosition + 35);
-      
-      yPosition += 45;
-      
-      if (yPosition > 270) {
+    let yPosition = 50; // Start position after header
+    let pageCount = 1;
+    
+    tokenData.forEach((token, index) => {
+      // Check if we need a new page
+      if (yPosition > pageHeight - 50) {
         doc.addPage();
-        yPosition = 20;
+        // Add decorative header on new page
+        doc.setFillColor(...primaryColor);
+        doc.rect(0, 0, pageWidth, 25, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(14);
+        doc.setFont("helvetica", "bold");
+        doc.text(`TwistNet Vouchers - Page ${pageCount + 1}`, pageWidth / 2, 15, {
+          align: "center",
+        });
+        doc.setTextColor(0, 0, 0);
+        yPosition = 40;
+        pageCount++;
       }
+      
+      // Get the voucher code
+      const voucherCode = token.tokenId || token.code || "";
+      
+      // Add index number and voucher code combined
+      const indexText = `${index + 1}. `;
+      const fullText = indexText + voucherCode;
+      
+      // Add voucher code (bold, font size 28)
+      doc.setFontSize(fontSize);
+      doc.setFont("helvetica", "bold");
+      
+      // Center the full text (index + voucher)
+      const textWidth = doc.getTextWidth(fullText);
+      const xPosition = (pageWidth - textWidth) / 2;
+      
+      // Add voucher code to PDF (bold and centered)
+      doc.setTextColor(0, 0, 0);
+      doc.text(fullText, xPosition, yPosition);
+      
+      // Move to next line
+      yPosition += lineHeight;
+    });
+    
+    // Add footer with thank you message
+    const footerY = pageHeight - 20;
+    doc.setFillColor(...primaryColor);
+    doc.rect(0, footerY - 5, pageWidth, 25, 'F');
+    
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.text("Thank you for choosing TwistNet!", pageWidth / 2, footerY + 3, {
+      align: "center",
+    });
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.text("For any inquiries, feel free to call 0741882818", pageWidth / 2, footerY + 10, {
+      align: "center",
     });
     
     doc.save('generated-vouchers.pdf');
@@ -399,7 +540,7 @@ export const ClientDashboard = () => {
       doc.text(`Voucher Code: ${token.tokenId}`, 20, 40);
       doc.text(`Router: ${token.router}`, 20, 50);
       doc.text(`Duration: ${token.duration}`, 20, 60);
-      doc.text(`Expires: ${format(new Date(token.expiryTime), 'MMM dd, hh:mm a')}`, 20, 70);
+   //   doc.text(`Expires: ${format(new Date(token.expiryTime), 'MMM dd, hh:mm a')}`, 20, 70);
       doc.save(`voucher-${tokenId}.pdf`);
     }
   };
@@ -609,7 +750,7 @@ export const ClientDashboard = () => {
           </div>
         )}
 
-         {/* Voucher Generation */}
+        {/* Voucher Generation */}
         <div className="bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 p-6 shadow-lg mb-8">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center">

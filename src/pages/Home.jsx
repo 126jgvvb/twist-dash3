@@ -5,6 +5,7 @@ import { RouterList } from "../components/routerList";
 import { PackagesList } from "../components/packages";
 import { AddRouter } from "../components/addRouter";
 import { GenerateToken } from "../components/tokenGenerate";
+import { BulkVoucherGenerator } from "../components/bulkVoucherGenerator";
 import { Footer } from "../components/footer";
 import { Trash2 } from "lucide-react";
 
@@ -78,7 +79,7 @@ export const Home = () => {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div className="lg:col-span-2">
                     <div className="glass-card p-6">
                         <div className="flex justify-between items-center mb-4">
@@ -93,11 +94,14 @@ export const Home = () => {
                     </div>
                 </div>
 
-                <div className="lg:col-span-1">
-                    <div className="glass-card p-6">
-                        <h2 className="text-xl font-bold mb-4">Generate Access Token</h2>
-                        <GenerateToken code={code} />
-                    </div>
+                <div className="glass-card p-6">
+                    <h2 className="text-xl font-bold mb-4">Generate Access Token</h2>
+                    <GenerateToken code={code} />
+                </div>
+
+                <div className="glass-card p-6">
+                    <h2 className="text-xl font-bold mb-4">Generate Bulk Vouchers</h2>
+                    <BulkVoucherGenerator />
                 </div>
             </div>
 
