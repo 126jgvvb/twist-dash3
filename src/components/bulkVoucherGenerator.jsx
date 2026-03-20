@@ -197,7 +197,24 @@ export const BulkVoucherGenerator = () => {
         <input
           type="text"
           value={timeForEach}
-          onChange={(e) => setTimeForEach(e.target.value)}
+          onChange={(e) => {
+            const value = e.target.value;
+            // Convert to seconds if format is recognized (e.g., 1h, 2h, 7d)
+            let seconds = value;
+            const hourMatch = value.match(/^(\d+)h$/i);
+            const dayMatch = value.match(/^(\d+)d$/i);
+            const minMatch = value.match(/^(\d+)m$/i);
+            
+            if (hourMatch) {
+              seconds = (parseInt(hourMatch[1]) * 3600).toString();
+            } else if (dayMatch) {
+              seconds = (parseInt(dayMatch[1]) * 86400).toString();
+            } else if (minMatch) {
+              seconds = (parseInt(minMatch[1]) * 60).toString();
+            }
+            
+            setTimeForEach(seconds);
+          }}
           placeholder="e.g., 1h, 2h, 24h, 7d"
           className="w-full px-3 py-2 rounded-lg bg-muted/20 border border-border/50 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
         />
