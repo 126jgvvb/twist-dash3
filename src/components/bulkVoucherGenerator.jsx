@@ -175,7 +175,7 @@ export const BulkVoucherGenerator = () => {
     });
     
     // Save the PDF
-    doc.save(`${timeForEach} hr(s)-voucher(s)-${new Date().toISOString().split("T")[0]}.pdf`);
+    doc.save(`${hours} hr(s)-voucher(s)-${new Date().toISOString().split("T")[0]}.pdf`);
   };
 
   return (
