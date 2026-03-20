@@ -86,8 +86,12 @@ export const BulkVoucherGenerator = () => {
     doc.text(`Generated: ${new Date().toLocaleDateString()}`, pageWidth / 2, 24, {
       align: "center",
     });
+    // Convert seconds to hours for display
+    const hours = Math.floor(parseInt(timeForEach) / 3600);
+    const displayTime = hours >= 1 ? `${hours} hour(s)` : `${timeForEach} seconds`;
+    
     doc.setFontSize(10);
-    doc.text(`Time: ${timeForEach} hr(s) | Total: ${vouchers.length} vouchers`, pageWidth / 2, 31, {
+    doc.text(`Time: ${displayTime} | Total: ${vouchers.length} vouchers`, pageWidth / 2, 31, {
       align: "center",
     });
     
